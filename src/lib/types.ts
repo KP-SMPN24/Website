@@ -17,3 +17,11 @@ export type Achievement = {
   imageUrl: string;
   category: 'Akademik' | 'Olahraga' | 'Seni' | 'Lainnya';
 };
+
+export type Staff = {
+  id: number;
+  name: string;
+  position: string;
+  imageUrl: string;
+  category: 'Pendidik' | 'Staf';
+};

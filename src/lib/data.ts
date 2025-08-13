@@ -1,4 +1,4 @@
-import type { NewsArticle, Achievement } from '@/lib/types';
+import type { NewsArticle, Achievement, Staff } from '@/lib/types';
 
 export const mockNews: NewsArticle[] = [
   {
@@ -67,6 +67,67 @@ export const mockAchievements: Achievement[] = [
     category: 'Lainnya',
   },
 ];
+
+
+export const mockStaff: Staff[] = [
+  {
+    id: 1,
+    name: 'Dr. Siti Aminah, M.Pd.',
+    position: 'Kepala Sekolah',
+    imageUrl: 'https://placehold.co/400x500',
+    category: 'Pendidik',
+  },
+  {
+    id: 2,
+    name: 'Budi Hartono, S.Pd.',
+    position: 'Wakil Kepala Sekolah Bidang Kurikulum',
+    imageUrl: 'https://placehold.co/400x500',
+    category: 'Pendidik',
+  },
+  {
+    id: 3,
+    name: 'Retno Wulandari, S.Si.',
+    position: 'Guru Fisika',
+    imageUrl: 'https://placehold.co/400x500',
+    category: 'Pendidik',
+  },
+  {
+    id: 4,
+    name: 'Agus Susanto, S.Kom.',
+    position: 'Guru TIK',
+    imageUrl: 'https://placehold.co/400x500',
+    category: 'Pendidik',
+  },
+  {
+    id: 5,
+    name: 'Dewi Lestari, S.S.',
+    position: 'Guru Bahasa Inggris',
+    imageUrl: 'https://placehold.co/400x500',
+    category: 'Pendidik',
+  },
+    {
+    id: 6,
+    name: 'Joko Widodo, S.Pd.',
+    position: 'Guru Penjaskes',
+    imageUrl: 'https://placehold.co/400x500',
+    category: 'Pendidik',
+  },
+  {
+    id: 7,
+    name: 'Endang Pujiastuti',
+    position: 'Kepala Tata Usaha',
+    imageUrl: 'https://placehold.co/400x500',
+    category: 'Staf',
+  },
+  {
+    id: 8,
+    name: 'Slamet Riyadi',
+    position: 'Staf Perpustakaan',
+    imageUrl: 'https://placehold.co/400x500',
+    category: 'Staf',
+  },
+];
+
 
 export function getNewsBySlug(slug: string): NewsArticle | undefined {
   return mockNews.find((article) => article.slug === slug);

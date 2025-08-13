@@ -21,6 +21,7 @@ const navLinks = [
     items: [
       { href: '/profil', label: 'Profil Sekolah' },
       { href: '/profil/visi-misi', label: 'Visi & Misi' },
+      { href: '/profil/guru-staff', label: 'Guru & Staf' },
       { href: '/profil/akreditasi', label: 'Akreditasi' },
     ]
   },

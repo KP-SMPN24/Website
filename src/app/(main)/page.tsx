@@ -13,6 +13,29 @@ export default function HomePage() {
   const latestNews = mockNews.slice(0, 3);
   const featuredAchievements = mockAchievements.slice(0, 3);
 
+  const facilities = [
+    {
+      icon: <Building className="h-10 w-10 mx-auto text-primary mb-2"/>,
+      title: "Ruang Kelas Modern",
+      total: "24",
+    },
+    {
+      icon: <FlaskConical className="h-10 w-10 mx-auto text-primary mb-2"/>,
+      title: "Lab Sains & Bahasa",
+      total: "6",
+    },
+    {
+      icon: <Computer className="h-10 w-10 mx-auto text-primary mb-2"/>,
+      title: "Lab Komputer",
+      total: "3",
+    },
+    {
+      icon: <Dumbbell className="h-10 w-10 mx-auto text-primary mb-2"/>,
+      title: "Sarana Olahraga",
+      total: "5",
+    },
+  ]
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <main className="flex-1">
@@ -124,22 +147,15 @@ export default function HomePage() {
                     </p>
                 </div>
                 <div className="mx-auto grid grid-cols-2 gap-6 pt-12 sm:grid-cols-4 lg:grid-cols-4">
-                    <Card className="text-center p-4 transition-shadow duration-300 hover:shadow-lg">
-                        <Building className="h-10 w-10 mx-auto text-primary mb-2"/>
-                        <CardTitle className="text-md font-semibold">Ruang Kelas Modern</CardTitle>
+                  {facilities.map((facility, index) => (
+                    <Card key={index} className="text-center p-4 transition-shadow duration-300 hover:shadow-lg flex flex-col justify-between">
+                        <div>
+                          {facility.icon}
+                          <CardTitle className="text-md font-semibold mt-2">{facility.title}</CardTitle>
+                        </div>
+                        <p className="text-4xl font-bold text-primary mt-4">{facility.total}</p>
                     </Card>
-                    <Card className="text-center p-4 transition-shadow duration-300 hover:shadow-lg">
-                        <FlaskConical className="h-10 w-10 mx-auto text-primary mb-2"/>
-                        <CardTitle className="text-md font-semibold">Lab Sains & Bahasa</CardTitle>
-                    </Card>
-                    <Card className="text-center p-4 transition-shadow duration-300 hover:shadow-lg">
-                        <Computer className="h-10 w-10 mx-auto text-primary mb-2"/>
-                        <CardTitle className="text-md font-semibold">Lab Komputer</CardTitle>
-                    </Card>
-                    <Card className="text-center p-4 transition-shadow duration-300 hover:shadow-lg">
-                        <Dumbbell className="h-10 w-10 mx-auto text-primary mb-2"/>
-                        <CardTitle className="text-md font-semibold">Sarana Olahraga</CardTitle>
-                    </Card>
+                  ))}
                 </div>
                  <div className="text-center mt-12">
                     <Button asChild variant="outline">

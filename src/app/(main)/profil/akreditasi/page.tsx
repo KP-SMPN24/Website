@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, FileText } from 'lucide-react';
+import prisma from '@/lib/prisma';
 
 // Fungsi untuk mengubah URL Google Drive biasa menjadi URL embed
 function getEmbedUrl(url: string): string | null {
@@ -11,9 +12,12 @@ function getEmbedUrl(url: string): string | null {
   return null; // atau kembalikan URL asli jika tidak cocok
 }
 
-export default function AkreditasiPage() {
-  // TODO: Ganti dengan data dari database/CMS.
-  const originalPdfUrl = "https://drive.google.com/file/d/1a2b3c4d5e6f7g8h9i0j/view?usp=sharing"; // Contoh link Google Drive
+export default async function AkreditasiPage() {
+  const accreditationUrlSetting = await prisma.setting.findUnique({
+    where: { key: 'accreditationUrl' },
+  });
+  
+  const originalPdfUrl = accreditationUrlSetting?.value || "";
   const embedUrl = getEmbedUrl(originalPdfUrl);
 
   return (
@@ -31,12 +35,14 @@ export default function AkreditasiPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Sertifikat Akreditasi BAN-S/M</CardTitle>
-            <Button asChild variant="secondary">
-              <a href={originalPdfUrl} target="_blank" rel="noopener noreferrer" download>
-                <Download className="mr-2 h-4 w-4" />
-                Unduh PDF
-              </a>
-            </Button>
+            {originalPdfUrl && (
+              <Button asChild variant="secondary">
+                <a href={originalPdfUrl} target="_blank" rel="noopener noreferrer" download>
+                  <Download className="mr-2 h-4 w-4" />
+                  Unduh PDF
+                </a>
+              </Button>
+            )}
           </CardHeader>
           <CardContent>
             {embedUrl ? (
@@ -51,8 +57,8 @@ export default function AkreditasiPage() {
             ) : (
               <div className="w-full aspect-video rounded-lg overflow-hidden border bg-muted flex flex-col items-center justify-center text-center p-8">
                 <FileText className="h-24 w-24 text-muted-foreground/50 mb-4" />
-                <h3 className="text-xl font-semibold text-muted-foreground">Pratinjau PDF tidak tersedia.</h3>
-                <p className="text-muted-foreground">URL Google Drive tidak valid atau tidak dapat di-embed.</p>
+                <h3 className="text-xl font-semibold text-muted-foreground">Sertifikat Belum Diunggah</h3>
+                <p className="text-muted-foreground">Link sertifikat akreditasi belum diatur melalui CMS.</p>
               </div>
             )}
           </CardContent>

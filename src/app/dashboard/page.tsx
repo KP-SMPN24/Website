@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { Newspaper, Trophy, PlusCircle, ArrowUpRight, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { mockNews, mockAchievements, mockStaff } from '@/lib/data';
+import prisma from '@/lib/prisma';
 
-export default function DashboardPage() {
-  const totalNews = mockNews.length;
-  const totalAchievements = mockAchievements.length;
-  const totalStaff = mockStaff.length;
+export default async function DashboardPage() {
+  const totalNews = await prisma.newsArticle.count();
+  const totalAchievements = await prisma.achievement.count();
+  const totalStaff = await prisma.staff.count();
 
   return (
     <>

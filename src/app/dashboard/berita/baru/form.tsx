@@ -1,8 +1,6 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useFormState } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -17,82 +15,53 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from "@/hooks/use-toast";
-
-const formSchema = z.object({
-  title: z.string().min(10, {
-    message: 'Judul harus memiliki setidaknya 10 karakter.',
-  }),
-  content: z.string().min(50, {
-    message: 'Konten harus memiliki setidaknya 50 karakter.',
-  }),
-});
+import { createNews } from '@/lib/actions';
+import { useEffect } from 'react';
 
 export function NewsForm() {
   const { toast } = useToast();
+  const [state, dispatch] = useFormState(createNews, undefined);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      content: '',
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Berhasil Disimpan!",
-      description: "Artikel berita Anda telah disimpan (simulasi).",
-    });
-    form.reset();
-  }
+  useEffect(() => {
+    if (state?.message) {
+      toast({
+        variant: "destructive",
+        title: "Terjadi Kesalahan!",
+        description: state.message,
+      });
+    } else if (state === undefined) {
+      // success state is tricky with redirects, so we can assume success if no error
+      // A more robust solution might involve passing a success message via query params
+    }
+  }, [state, toast]);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Konten Artikel</CardTitle>
-            <CardDescription>Isi detail berita atau pengumuman di bawah ini.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Judul Berita</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Tulis judul berita di sini..." {...field} />
-                  </FormControl>
-                   <FormDescription>
-                    Pastikan judul jelas dan informatif.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
+    <form action={dispatch} className="space-y-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Konten Artikel</CardTitle>
+          <CardDescription>Isi detail berita atau pengumuman di bawah ini.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700">Judul Berita</label>
+            <Input id="title" name="title" placeholder="Tulis judul berita di sini..." />
+            {state?.errors?.title && <p className="text-sm font-medium text-destructive">{state.errors.title[0]}</p>}
+          </div>
+
+          <div>
+             <label htmlFor="content" className="block text-sm font-medium text-gray-700">Isi Berita</label>
+            <Textarea
+              id="content"
               name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Isi Berita</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tulis seluruh isi berita atau pengumuman di sini..."
-                      className="min-h-[200px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              placeholder="Tulis seluruh isi berita atau pengumuman di sini..."
+              className="min-h-[200px]"
             />
-          </CardContent>
-        </Card>
-        <Button type="submit">Simpan dan Publikasikan Artikel</Button>
-      </form>
-    </Form>
+            {state?.errors?.content && <p className="text-sm font-medium text-destructive">{state.errors.content[0]}</p>}
+          </div>
+        </CardContent>
+      </Card>
+      <Button type="submit">Simpan dan Publikasikan Artikel</Button>
+    </form>
   );
 }

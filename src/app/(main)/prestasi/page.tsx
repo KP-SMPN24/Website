@@ -1,4 +1,4 @@
-import { mockAchievements } from '@/lib/data';
+import prisma from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Medal, Award, Star } from 'lucide-react';
@@ -11,7 +11,13 @@ const categoryIcons: { [key in Achievement['category']]: React.ReactNode } = {
   Lainnya: <Star className="h-8 w-8 text-accent-foreground" />,
 };
 
-export default function PrestasiPage() {
+export default async function PrestasiPage() {
+  const achievements = await prisma.achievement.findMany({
+    orderBy: {
+      date: 'desc',
+    },
+  });
+
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="space-y-4 mb-12 text-center">
@@ -24,7 +30,7 @@ export default function PrestasiPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {mockAchievements.map((achievement) => (
+        {achievements.map((achievement) => (
           <Card key={achievement.id} className="flex flex-col items-center text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
             <div className="p-4 bg-accent rounded-full mb-4">
               {categoryIcons[achievement.category]}

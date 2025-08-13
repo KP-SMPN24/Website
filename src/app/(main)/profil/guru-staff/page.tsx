@@ -1,11 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { mockStaff } from '@/lib/data';
+import prisma from '@/lib/prisma';
 
-export default function GuruStaffPage() {
-  const teachers = mockStaff.filter(s => s.category === 'Pendidik');
-  const staff = mockStaff.filter(s => s.category === 'Staf');
+export default async function GuruStaffPage() {
+  const allStaff = await prisma.staff.findMany();
+  const teachers = allStaff.filter(s => s.category === 'Pendidik');
+  const staff = allStaff.filter(s => s.category === 'Staf');
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">

@@ -18,11 +18,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { mockAchievements } from '@/lib/data';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import prisma from '@/lib/prisma';
 
-export default function PrestasiManagementPage() {
+export default async function PrestasiManagementPage() {
+  const allAchievements = await prisma.achievement.findMany({
+    orderBy: {
+      date: 'desc',
+    },
+  });
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center">
@@ -54,7 +60,7 @@ export default function PrestasiManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockAchievements.map((achievement) => (
+              {allAchievements.map((achievement) => (
                 <TableRow key={achievement.id}>
                   <TableCell className="font-medium">{achievement.title}</TableCell>
                   <TableCell className="hidden md:table-cell">

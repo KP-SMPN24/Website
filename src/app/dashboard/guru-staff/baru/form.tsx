@@ -1,18 +1,7 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useFormState } from 'react-dom';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -24,42 +13,26 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from "@/hooks/use-toast";
 import { Upload } from 'lucide-react';
-
-const formSchema = z.object({
-  name: z.string().min(3, {
-    message: 'Nama harus memiliki setidaknya 3 karakter.',
-  }),
-  position: z.string().min(5, {
-    message: 'Jabatan harus memiliki setidaknya 5 karakter.',
-  }),
-  category: z.enum(['Pendidik', 'Staf'], {
-    required_error: 'Anda harus memilih kategori.',
-  }),
-});
+import { createStaff } from '@/lib/actions';
+import { useEffect } from 'react';
 
 export function StaffForm() {
   const { toast } = useToast();
+  const [state, dispatch] = useFormState(createStaff, undefined);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      position: '',
-    },
-  });
+  useEffect(() => {
+    if (state?.message) {
+      toast({
+        variant: "destructive",
+        title: "Terjadi Kesalahan!",
+        description: state.message,
+      });
+    }
+  }, [state, toast]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Data Berhasil Disimpan!",
-      description: "Data guru/staf baru telah disimpan (simulasi).",
-    });
-    form.reset();
-  }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+    <form action={dispatch} className="space-y-8">
         <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
                 <Card>
@@ -68,53 +41,31 @@ export function StaffForm() {
                     <CardDescription>Isi data lengkap mengenai guru atau staf.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Nama Lengkap</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Contoh: Budi Hartono, S.Pd." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="position"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Jabatan</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Contoh: Guru Matematika" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Kategori</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
+                    <div>
+                        <label htmlFor="name">Nama Lengkap</label>
+                        <Input id="name" name="name" placeholder="Contoh: Budi Hartono, S.Pd." />
+                        {state?.errors?.name && <p className="text-sm font-medium text-destructive">{state.errors.name[0]}</p>}
+                    </div>
+
+                    <div>
+                        <label htmlFor="position">Jabatan</label>
+                        <Input id="position" name="position" placeholder="Contoh: Guru Matematika" />
+                         {state?.errors?.position && <p className="text-sm font-medium text-destructive">{state.errors.position[0]}</p>}
+                    </div>
+
+                    <div>
+                        <label htmlFor="category">Kategori</label>
+                        <Select name="category">
                             <SelectTrigger>
                                 <SelectValue placeholder="Pilih kategori" />
                             </SelectTrigger>
-                            </FormControl>
                             <SelectContent>
-                            <SelectItem value="Pendidik">Pendidik (Guru)</SelectItem>
-                            <SelectItem value="Staf">Tenaga Kependidikan (Staf)</SelectItem>
+                                <SelectItem value="Pendidik">Pendidik (Guru)</SelectItem>
+                                <SelectItem value="Staf">Tenaga Kependidikan (Staf)</SelectItem>
                             </SelectContent>
                         </Select>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+                        {state?.errors?.category && <p className="text-sm font-medium text-destructive">{state.errors.category[0]}</p>}
+                    </div>
                 </CardContent>
                 </Card>
             </div>
@@ -140,7 +91,6 @@ export function StaffForm() {
             </div>
         </div>
         <Button type="submit">Simpan Data</Button>
-      </form>
-    </Form>
+    </form>
   );
 }

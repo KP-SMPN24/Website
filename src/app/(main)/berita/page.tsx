@@ -1,14 +1,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { mockNews } from '@/lib/data';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import prisma from '@/lib/prisma';
 
-export default function BeritaPage() {
+export default async function BeritaPage() {
+  const allNews = await prisma.newsArticle.findMany({
+    orderBy: {
+      date: 'desc',
+    },
+  });
+
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="space-y-4 mb-12 text-center">
@@ -20,7 +26,7 @@ export default function BeritaPage() {
         </p>
       </div>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {mockNews.map((article) => (
+        {allNews.map((article) => (
           <Card key={article.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
             <CardHeader className="p-0">
               <Link href={`/berita/${article.slug}`}>

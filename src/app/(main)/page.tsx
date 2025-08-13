@@ -5,13 +5,24 @@ import { ArrowRight, BookOpen, Newspaper, Trophy, Target, Milestone, Building, F
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { mockNews, mockAchievements } from '@/lib/data';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import prisma from '@/lib/prisma';
 
-export default function HomePage() {
-  const latestNews = mockNews.slice(0, 3);
-  const featuredAchievements = mockAchievements.slice(0, 3);
+export default async function HomePage() {
+  const latestNews = await prisma.newsArticle.findMany({
+    take: 3,
+    orderBy: {
+      date: 'desc',
+    },
+  });
+
+  const featuredAchievements = await prisma.achievement.findMany({
+    take: 3,
+    orderBy: {
+      date: 'desc',
+    },
+  });
 
   const facilities = [
     {

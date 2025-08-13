@@ -18,11 +18,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { mockNews } from '@/lib/data';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import prisma from '@/lib/prisma';
 
-export default function BeritaManagementPage() {
+export default async function BeritaManagementPage() {
+  const allNews = await prisma.newsArticle.findMany({
+    orderBy: {
+      date: 'desc',
+    },
+  });
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center">
@@ -54,7 +60,7 @@ export default function BeritaManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockNews.map((article) => (
+              {allNews.map((article) => (
                 <TableRow key={article.id}>
                   <TableCell className="font-medium">{article.title}</TableCell>
                   <TableCell className="hidden md:table-cell">

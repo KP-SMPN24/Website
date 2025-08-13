@@ -18,10 +18,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { mockStaff } from '@/lib/data';
 import Image from 'next/image';
+import prisma from '@/lib/prisma';
 
-export default function GuruStaffManagementPage() {
+export default async function GuruStaffManagementPage() {
+  const allStaff = await prisma.staff.findMany();
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center">
@@ -56,7 +58,7 @@ export default function GuruStaffManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockStaff.map((person) => (
+              {allStaff.map((person) => (
                 <TableRow key={person.id}>
                    <TableCell className="hidden sm:table-cell">
                     <Image

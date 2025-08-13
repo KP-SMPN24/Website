@@ -1,10 +1,11 @@
-import { getNewsBySlug, mockNews } from '@/lib/data';
+import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Calendar, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { NewsArticle } from '@prisma/client';
 
 type BeritaDetailPageProps = {
   params: {
@@ -13,13 +14,18 @@ type BeritaDetailPageProps = {
 };
 
 export async function generateStaticParams() {
-  return mockNews.map((news) => ({
+  const news = await prisma.newsArticle.findMany();
+  return news.map((news) => ({
     slug: news.slug,
   }));
 }
 
-export default function BeritaDetailPage({ params }: BeritaDetailPageProps) {
-  const article = getNewsBySlug(params.slug);
+async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
+    return prisma.newsArticle.findUnique({ where: { slug } });
+}
+
+export default async function BeritaDetailPage({ params }: BeritaDetailPageProps) {
+  const article = await getNewsBySlug(params.slug);
 
   if (!article) {
     notFound();

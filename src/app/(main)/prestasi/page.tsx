@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Medal, Award, Star } from 'lucide-react';
-import type { Achievement } from '@/lib/types';
+import type { Achievement } from '@prisma/client';
 
 const categoryIcons: { [key in Achievement['category']]: React.ReactNode } = {
   Akademik: <Trophy className="h-8 w-8 text-accent-foreground" />,

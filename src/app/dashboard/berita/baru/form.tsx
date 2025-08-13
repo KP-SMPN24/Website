@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -47,7 +48,7 @@ export function NewsForm() {
     if (content.length < 50) {
       toast({
         title: "Konten terlalu pendek",
-        description: "Mohon tulis setidaknya 50 karakter untuk menghasilkan judul.",
+        description: "Mohon tulis setidaknya 50 karakter pada bagian konten untuk bisa mendapatkan saran judul otomatis.",
         variant: "destructive",
       });
       return;
@@ -61,8 +62,8 @@ export function NewsForm() {
     } catch (error) {
       console.error(error);
       toast({
-        title: "Gagal menghasilkan judul",
-        description: "Terjadi kesalahan saat menghubungi AI. Silakan coba lagi.",
+        title: "Gagal mendapatkan saran judul",
+        description: "Terjadi kesalahan saat menghubungi AI. Silakan coba beberapa saat lagi.",
         variant: "destructive",
       });
     } finally {
@@ -98,10 +99,10 @@ export function NewsForm() {
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Konten</FormLabel>
+                  <FormLabel>Isi Berita</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Tulis isi artikel di sini..."
+                      placeholder="Tulis seluruh isi berita atau pengumuman di sini..."
                       className="min-h-[200px]"
                       {...field}
                     />
@@ -111,14 +112,32 @@ export function NewsForm() {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Judul Berita</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Judul yang menarik akan ditampilkan di sini" {...field} />
+                  </FormControl>
+                   <FormDescription>
+                    Anda bisa mengisi judul secara manual atau gunakan bantuan AI di bawah.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <Card className="bg-muted/50">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Wand2 className="text-accent" />
-                  Generator Judul AI
+                  <Wand2 className="text-primary" />
+                  Saran Judul Otomatis (AI)
                 </CardTitle>
                 <CardDescription>
-                  Tidak punya ide untuk judul? Biarkan AI membantu Anda. Tulis konten di atas, lalu klik tombol di bawah.
+                  Jika Anda kesulitan membuat judul, biarkan AI memberikan beberapa ide.
+                  Pastikan isi berita sudah ditulis, lalu klik tombol di bawah untuk mendapatkan saran.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -128,11 +147,11 @@ export function NewsForm() {
                   ) : (
                     <Wand2 className="mr-2 h-4 w-4" />
                   )}
-                  {isGenerating ? 'Menghasilkan...' : 'Hasilkan Judul'}
+                  {isGenerating ? 'Memberikan Saran...' : 'Beri Saya Saran Judul'}
                 </Button>
                 {suggestions.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <h4 className="font-semibold">Saran Judul:</h4>
+                    <h4 className="font-semibold">Pilih salah satu saran di bawah ini:</h4>
                     <ul className="list-disc pl-5 space-y-1">
                       {suggestions.map((s, i) => (
                         <li key={i}>
@@ -152,22 +171,9 @@ export function NewsForm() {
               </CardContent>
             </Card>
 
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Judul Artikel</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Judul yang menarik akan ditampilkan di sini" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </CardContent>
         </Card>
-        <Button type="submit">Simpan Artikel</Button>
+        <Button type="submit">Simpan dan Publikasikan Artikel</Button>
       </form>
     </Form>
   );

@@ -5,22 +5,25 @@ export function Footer() {
   return (
     <footer className="border-t bg-card text-card-foreground">
       <div className="container py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div className="flex flex-col items-start">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+          <div className="flex flex-col items-start md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <GraduationCap className="h-8 w-8 text-primary" />
               <span className="text-xl font-bold">EduVerse</span>
             </Link>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm max-w-md">
               Membangun Generasi Unggul, Berkarakter, dan Berwawasan Global.
             </p>
           </div>
           <div>
-            <h3 className="font-semibold mb-4">Tautan Cepat</h3>
+            <h3 className="font-semibold mb-4">Jelajahi</h3>
             <ul className="space-y-2 text-sm">
+              <li><Link href="/profil" className="text-muted-foreground hover:text-primary transition-colors">Profil</Link></li>
+              <li><Link href="/akademik" className="text-muted-foreground hover:text-primary transition-colors">Akademik</Link></li>
+              <li><Link href="/penerimaan" className="text-muted-foreground hover:text-primary transition-colors">Penerimaan</Link></li>
               <li><Link href="/berita" className="text-muted-foreground hover:text-primary transition-colors">Berita</Link></li>
               <li><Link href="/prestasi" className="text-muted-foreground hover:text-primary transition-colors">Prestasi</Link></li>
-              <li><Link href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">Login CMS</Link></li>
+              <li><Link href="/kontak" className="text-muted-foreground hover:text-primary transition-colors">Kontak</Link></li>
             </ul>
           </div>
           <div>

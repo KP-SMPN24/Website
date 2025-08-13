@@ -1,26 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
 }
 
 model NewsArticle {
-  id        Int      @id @default(autoincrement())
-  slug      String   @unique
+  id        String   @id @default(cuid())
   title     String
-  content   String
+  content   String   @db.Text
+  slug      String   @unique
   author    String
-  date      DateTime @default(now())
-  imageUrl  String
   category  String
+  imageUrl  String
+  date      DateTime @default(now())
 }
 
 model Achievement {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(cuid())
   title       String
   description String
   date        String
@@ -29,7 +32,7 @@ model Achievement {
 }
 
 model Staff {
-  id        Int      @id @default(autoincrement())
+  id        String @id @default(cuid())
   name      String
   position  String
   imageUrl  String
@@ -37,7 +40,7 @@ model Staff {
 }
 
 model Setting {
-  id    Int    @id @default(autoincrement())
-  key   String @unique
-  value String
+  id      String @id @default(cuid())
+  key     String @unique
+  value   String @db.Text
 }

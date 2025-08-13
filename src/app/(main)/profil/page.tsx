@@ -20,7 +20,7 @@ export default function ProfilPage() {
           <div className="grid md:grid-cols-5">
             <div className="md:col-span-2">
               <Image
-                src="https://placehold.co/400x500"
+                src="https://placehold.co/400x500.png"
                 alt="Kepala Sekolah"
                 width={400}
                 height={500}

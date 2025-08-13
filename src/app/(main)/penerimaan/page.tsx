@@ -86,7 +86,7 @@ export default function PenerimaanPage() {
         </div>
         <div className="rounded-lg overflow-hidden">
             <Image 
-                src="https://placehold.co/600x400" 
+                src="https://placehold.co/600x400.png" 
                 alt="Siswa SMA EduVerse"
                 width={600}
                 height={400}

@@ -90,7 +90,7 @@ export default function DashboardLayout({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="overflow-hidden rounded-full">
                 <Avatar>
-                  <AvatarImage src="https://placehold.co/32x32" alt="Avatar" />
+                  <AvatarImage src="https://placehold.co/32x32.png" alt="Avatar" />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
               </Button>

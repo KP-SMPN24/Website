@@ -41,7 +41,7 @@ export default function HomePage() {
       <main className="flex-1">
         <section className="relative w-full h-[60vh] md:h-[80vh]">
           <Image
-            src="https://placehold.co/1600x900"
+            src="https://placehold.co/1600x900.png"
             alt="Hero background"
             layout="fill"
             objectFit="cover"
@@ -82,7 +82,7 @@ export default function HomePage() {
                 </Button>
               </div>
               <Image
-                src="https://placehold.co/600x400"
+                src="https://placehold.co/600x400.png"
                 width={600}
                 height={400}
                 alt="About us"

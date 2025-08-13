@@ -17,22 +17,22 @@ export default function HomePage() {
     {
       icon: <Building className="h-10 w-10 mx-auto text-primary mb-2"/>,
       title: "Ruang Kelas Modern",
-      total: "24",
+      description: "24 ruang kelas dengan fasilitas AC dan proyektor.",
     },
     {
       icon: <FlaskConical className="h-10 w-10 mx-auto text-primary mb-2"/>,
       title: "Lab Sains & Bahasa",
-      total: "6",
+      description: "6 laboratorium lengkap untuk praktikum dan bahasa.",
     },
     {
       icon: <Computer className="h-10 w-10 mx-auto text-primary mb-2"/>,
       title: "Lab Komputer",
-      total: "3",
+      description: "3 laboratorium komputer dengan perangkat terbaru.",
     },
     {
       icon: <Dumbbell className="h-10 w-10 mx-auto text-primary mb-2"/>,
       title: "Sarana Olahraga",
-      total: "5",
+      description: "5 area olahraga termasuk lapangan basket dan futsal.",
     },
   ]
 
@@ -56,7 +56,7 @@ export default function HomePage() {
             <p className="max-w-[700px] text-lg md:text-xl mt-4 animate-fade-in-up">
               Membentuk masa depan cerah melalui pendidikan berkualitas dan inovasi tanpa henti.
             </p>
-            <div className="mt-8">
+            <div className="mt-8 animate-fade-in-up animation-delay-300">
               <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
                 <Link href="/penerimaan">
                   Pendaftaran Siswa Baru <ArrowRight className="ml-2 h-5 w-5" />
@@ -68,9 +68,9 @@ export default function HomePage() {
 
         <section id="about" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
+            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
               <div className="space-y-4">
-                <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Tentang Kami</Badge>
+                <Badge variant="secondary" className="text-base">Tentang Kami</Badge>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
                   Pendidikan Unggul untuk Generasi Masa Depan
                 </h2>
@@ -96,7 +96,7 @@ export default function HomePage() {
         <section id="visi-misi" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
            <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                <Badge className="bg-accent/10 text-accent-foreground hover:bg-accent/20">Visi & Misi</Badge>
+                <Badge variant="secondary" className="text-base">Visi & Misi</Badge>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Arah dan Tujuan Kami</h2>
              </div>
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mt-12">
@@ -140,20 +140,22 @@ export default function HomePage() {
         <section id="fasilitas" className="w-full py-12 md:py-24 lg:py-32">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Fasilitas</Badge>
+                    <Badge variant="secondary" className="text-base">Fasilitas</Badge>
                     <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Lingkungan Belajar Modern</h2>
                     <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                         Kami menyediakan fasilitas lengkap dan modern untuk mendukung proses belajar mengajar yang optimal.
                     </p>
                 </div>
-                <div className="mx-auto grid grid-cols-2 gap-6 pt-12 sm:grid-cols-4 lg:grid-cols-4">
+                <div className="mx-auto grid grid-cols-1 gap-8 pt-12 sm:grid-cols-2 lg:grid-cols-4">
                   {facilities.map((facility, index) => (
-                    <Card key={index} className="text-center p-4 transition-shadow duration-300 hover:shadow-lg flex flex-col justify-between">
-                        <div>
-                          {facility.icon}
-                          <CardTitle className="text-md font-semibold mt-2">{facility.title}</CardTitle>
-                        </div>
-                        <p className="text-4xl font-bold text-primary mt-4">{facility.total}</p>
+                    <Card key={index} className="text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col items-center">
+                        {facility.icon}
+                        <CardHeader className="p-0 mt-4">
+                          <CardTitle className="text-lg font-semibold">{facility.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0 mt-2">
+                          <p className="text-muted-foreground text-sm">{facility.description}</p>
+                        </CardContent>
                     </Card>
                   ))}
                 </div>
@@ -169,7 +171,7 @@ export default function HomePage() {
         <section id="news" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <Badge className="bg-accent/10 text-accent-foreground hover:bg-accent/20">Berita Terbaru</Badge>
+              <Badge variant="secondary" className="text-base">Berita Terbaru</Badge>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Ikuti Perkembangan Terkini</h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 Dapatkan informasi terbaru seputar kegiatan, pengumuman, dan pencapaian dari komunitas sekolah kami.
@@ -220,7 +222,7 @@ export default function HomePage() {
         <section id="achievements" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Prestasi Kami</Badge>
+              <Badge variant="secondary" className="text-base">Prestasi Kami</Badge>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Merayakan Keberhasilan</h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 Kami bangga dengan berbagai prestasi yang telah diraih oleh siswa dan sekolah kami di berbagai bidang.
@@ -228,7 +230,7 @@ export default function HomePage() {
             </div>
             <div className="mx-auto grid grid-cols-1 gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3">
               {featuredAchievements.map((achievement) => (
-                <Card key={achievement.id} className="flex flex-col text-center items-center p-6 transition-shadow duration-300 hover:shadow-lg">
+                <Card key={achievement.id} className="flex flex-col text-center items-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                   <div className="p-4 bg-accent rounded-full mb-4">
                     <Trophy className="h-8 w-8 text-accent-foreground" />
                   </div>

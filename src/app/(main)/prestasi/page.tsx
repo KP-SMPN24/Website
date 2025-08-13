@@ -1,8 +1,10 @@
-import prisma from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Medal, Award, Star } from 'lucide-react';
-import type { Achievement } from '@prisma/client';
+import type { Achievement } from '@/lib/types';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+
 
 const categoryIcons: { [key in Achievement['category']]: React.ReactNode } = {
   Akademik: <Trophy className="h-8 w-8 text-accent-foreground" />,
@@ -11,12 +13,16 @@ const categoryIcons: { [key in Achievement['category']]: React.ReactNode } = {
   Lainnya: <Star className="h-8 w-8 text-accent-foreground" />,
 };
 
+async function getAllAchievements() {
+    const achievementsCollection = collection(db, 'achievements');
+    const q = query(achievementsCollection, orderBy('date', 'desc'));
+    const achievementsSnapshot = await getDocs(q);
+    return achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
+}
+
+
 export default async function PrestasiPage() {
-  const achievements = await prisma.achievement.findMany({
-    orderBy: {
-      date: 'desc',
-    },
-  });
+  const achievements = await getAllAchievements();
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -41,7 +47,7 @@ export default async function PrestasiPage() {
             </CardHeader>
             <CardContent className="mt-2 text-muted-foreground">
               <p>{achievement.description}</p>
-              <p className="text-xs mt-4">{achievement.date}</p>
+              <p className="text-xs mt-4">{new Date(achievement.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </CardContent>
           </Card>
         ))}

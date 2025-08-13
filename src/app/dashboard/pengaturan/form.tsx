@@ -7,26 +7,30 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from "@/hooks/use-toast";
 import { updateSettings } from '@/lib/actions';
 import { useEffect } from 'react';
-import type { Setting } from '@prisma/client';
+import type { Setting } from '@/lib/types';
+
 
 export function SettingsForm({ settings }: { settings: Setting[] }) {
   const { toast } = useToast();
+  // The state now includes a success message
   const [state, dispatch] = useFormState(updateSettings, undefined);
 
-  const accreditationUrl = settings.find(s => s.key === 'accreditationUrl')?.value || '';
+  const accreditationUrl = settings.find(s => s.id === 'accreditationUrl')?.value || '';
 
   useEffect(() => {
     if (state?.message) {
-      toast({
-        variant: "destructive",
-        title: "Terjadi Kesalahan!",
-        description: state.message,
-      });
-    } else {
+      if (state.errors) {
+        toast({
+          variant: "destructive",
+          title: "Terjadi Kesalahan!",
+          description: state.message,
+        });
+      } else {
         toast({
             title: "Pengaturan Disimpan!",
-            description: "Perubahan telah berhasil disimpan.",
+            description: state.message,
         });
+      }
     }
   }, [state, toast]);
 

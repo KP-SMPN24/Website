@@ -1,28 +1,33 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, BookOpen, Newspaper, Trophy, Target, Milestone, Building, FlaskConical, Computer, Dumbbell } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import type { NewsArticle, Achievement } from '@/lib/types';
+
+
+async function getLatestData() {
+    const newsCollection = collection(db, 'newsArticles');
+    const newsQuery = query(newsCollection, orderBy('date', 'desc'), limit(3));
+    const newsSnapshot = await getDocs(newsQuery);
+    const latestNews = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+
+    const achievementsCollection = collection(db, 'achievements');
+    const achievementsQuery = query(achievementsCollection, orderBy('date', 'desc'), limit(3));
+    const achievementsSnapshot = await getDocs(achievementsQuery);
+    const featuredAchievements = achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
+    
+    return { latestNews, featuredAchievements };
+}
+
 
 export default async function HomePage() {
-  const latestNews = await prisma.newsArticle.findMany({
-    take: 3,
-    orderBy: {
-      date: 'desc',
-    },
-  });
-
-  const featuredAchievements = await prisma.achievement.findMany({
-    take: 3,
-    orderBy: {
-      date: 'desc',
-    },
-  });
+  const { latestNews, featuredAchievements } = await getLatestData();
 
   const facilities = [
     {
@@ -182,38 +187,41 @@ export default async function HomePage() {
               </p>
             </div>
             <div className="mx-auto grid grid-cols-1 gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3">
-              {latestNews.map((article) => (
-                <Card key={article.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-                  <CardHeader className="p-0">
-                    <Link href={`/berita/${article.slug}`}>
-                      <Image
-                        src={article.imageUrl}
-                        width={400}
-                        height={250}
-                        alt={article.title}
-                        className="aspect-video w-full object-cover"
-                        data-ai-hint={article.category === 'Berita' ? "news event" : "announcement notice"}
-                      />
-                    </Link>
-                  </CardHeader>
-                  <CardContent className="p-6 flex-grow">
-                    <Badge variant="outline" className="mb-2">{article.category}</Badge>
-                    <CardTitle className="text-xl h-16 leading-tight font-headline">
-                       <Link href={`/berita/${article.slug}`} className="hover:text-primary transition-colors">{article.title}</Link>
-                    </CardTitle>
-                    <CardDescription className="mt-2 text-sm text-muted-foreground">
-                      {format(new Date(article.date), "d MMMM yyyy", { locale: id })}
-                    </CardDescription>
-                  </CardContent>
-                  <CardFooter className="p-6 pt-0">
-                    <Button asChild variant="link" className="p-0 h-auto">
-                      <Link href={`/berita/${article.slug}`}>
-                        Baca Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+              {latestNews.map((article) => {
+                 const articleDate = typeof article.date === 'string' ? new Date(article.date) : article.date.toDate();
+                 return (
+                    <Card key={article.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
+                    <CardHeader className="p-0">
+                        <Link href={`/berita/${article.slug}`}>
+                        <Image
+                            src={article.imageUrl}
+                            width={400}
+                            height={250}
+                            alt={article.title}
+                            className="aspect-video w-full object-cover"
+                            data-ai-hint={article.category === 'Berita' ? "news event" : "announcement notice"}
+                        />
+                        </Link>
+                    </CardHeader>
+                    <CardContent className="p-6 flex-grow">
+                        <Badge variant="outline" className="mb-2">{article.category}</Badge>
+                        <CardTitle className="text-xl h-16 leading-tight font-headline">
+                        <Link href={`/berita/${article.slug}`} className="hover:text-primary transition-colors">{article.title}</Link>
+                        </CardTitle>
+                        <CardDescription className="mt-2 text-sm text-muted-foreground">
+                        {format(articleDate, "d MMMM yyyy", { locale: id })}
+                        </CardDescription>
+                    </CardContent>
+                    <CardFooter className="p-6 pt-0">
+                        <Button asChild variant="link" className="p-0 h-auto">
+                        <Link href={`/berita/${article.slug}`}>
+                            Baca Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                        </Button>
+                    </CardFooter>
+                    </Card>
+                 )
+              })}
             </div>
             <div className="text-center mt-12">
               <Button asChild variant="outline">

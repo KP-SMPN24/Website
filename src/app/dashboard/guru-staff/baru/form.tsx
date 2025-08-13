@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormState } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -14,21 +15,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from "@/hooks/use-toast";
 import { Upload } from 'lucide-react';
 import { createStaff } from '@/lib/actions';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function StaffForm() {
   const { toast } = useToast();
+  const router = useRouter();
   const [state, dispatch] = useFormState(createStaff, undefined);
+  const [category, setCategory] = useState('');
 
   useEffect(() => {
     if (state?.message) {
-      toast({
-        variant: "destructive",
-        title: "Terjadi Kesalahan!",
-        description: state.message,
-      });
+      if(state.errors) {
+          toast({
+              variant: "destructive",
+              title: "Terjadi Kesalahan!",
+              description: state.message,
+          });
+      } else {
+           toast({
+              title: "Berhasil!",
+              description: "Data guru/staf telah berhasil disimpan.",
+          });
+          router.push('/dashboard/guru-staff');
+      }
     }
-  }, [state, toast]);
+  }, [state, toast, router]);
 
 
   return (
@@ -43,19 +54,20 @@ export function StaffForm() {
                 <CardContent className="space-y-6">
                     <div>
                         <label htmlFor="name">Nama Lengkap</label>
-                        <Input id="name" name="name" placeholder="Contoh: Budi Hartono, S.Pd." />
+                        <Input id="name" name="name" placeholder="Contoh: Budi Hartono, S.Pd." required/>
                         {state?.errors?.name && <p className="text-sm font-medium text-destructive">{state.errors.name[0]}</p>}
                     </div>
 
                     <div>
                         <label htmlFor="position">Jabatan</label>
-                        <Input id="position" name="position" placeholder="Contoh: Guru Matematika" />
+                        <Input id="position" name="position" placeholder="Contoh: Guru Matematika" required/>
                          {state?.errors?.position && <p className="text-sm font-medium text-destructive">{state.errors.position[0]}</p>}
                     </div>
 
                     <div>
                         <label htmlFor="category">Kategori</label>
-                        <Select name="category">
+                         <input type="hidden" name="category" value={category} />
+                        <Select onValueChange={setCategory} required>
                             <SelectTrigger>
                                 <SelectValue placeholder="Pilih kategori" />
                             </SelectTrigger>

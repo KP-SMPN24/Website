@@ -20,14 +20,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import type { Achievement } from '@/lib/types';
+
+
+async function getAllAchievements() {
+    const achievementsCollection = collection(db, 'achievements');
+    const q = query(achievementsCollection, orderBy('date', 'desc'));
+    const achievementsSnapshot = await getDocs(q);
+    return achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
+}
+
 
 export default async function PrestasiManagementPage() {
-  const allAchievements = await prisma.achievement.findMany({
-    orderBy: {
-      date: 'desc',
-    },
-  });
+  const allAchievements = await getAllAchievements();
 
   return (
     <div className="flex flex-col gap-4">

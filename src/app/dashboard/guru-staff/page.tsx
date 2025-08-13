@@ -19,10 +19,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
+import type { Staff } from '@/lib/types';
+
+
+async function getAllStaff() {
+    const staffCollection = collection(db, 'staff');
+    const staffSnapshot = await getDocs(staffCollection);
+    return staffSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Staff));
+}
 
 export default async function GuruStaffManagementPage() {
-  const allStaff = await prisma.staff.findMany();
+  const allStaff = await getAllStaff();
 
   return (
     <div className="flex flex-col gap-4">

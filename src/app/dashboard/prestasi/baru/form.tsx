@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormState } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,21 +15,31 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from "@/hooks/use-toast";
 import { createAchievement } from '@/lib/actions';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function AchievementForm() {
   const { toast } = useToast();
+  const router = useRouter();
   const [state, dispatch] = useFormState(createAchievement, undefined);
+  const [category, setCategory] = useState('');
 
   useEffect(() => {
     if (state?.message) {
-      toast({
-        variant: "destructive",
-        title: "Terjadi Kesalahan!",
-        description: state.message,
-      });
+      if(state.errors) {
+          toast({
+              variant: "destructive",
+              title: "Terjadi Kesalahan!",
+              description: state.message,
+          });
+      } else {
+           toast({
+              title: "Berhasil!",
+              description: "Prestasi telah berhasil ditambahkan.",
+          });
+          router.push('/dashboard/prestasi');
+      }
     }
-  }, [state, toast]);
+  }, [state, toast, router]);
 
   return (
     <form action={dispatch} className="space-y-8">
@@ -40,7 +51,7 @@ export function AchievementForm() {
         <CardContent className="space-y-6">
           <div>
             <label htmlFor="title">Nama Prestasi</label>
-            <Input id="title" name="title" placeholder="Contoh: Juara 1 Lomba Cerdas Cermat" />
+            <Input id="title" name="title" placeholder="Contoh: Juara 1 Lomba Cerdas Cermat" required/>
             <p className="text-sm text-muted-foreground mt-1">Tuliskan nama penghargaan atau gelar yang diraih.</p>
             {state?.errors?.title && <p className="text-sm font-medium text-destructive">{state.errors.title[0]}</p>}
           </div>
@@ -51,13 +62,15 @@ export function AchievementForm() {
               id="description"
               name="description"
               placeholder="Jelaskan sedikit tentang prestasi ini, seperti tingkat kompetisi atau siapa yang meraihnya."
+              required
             />
             {state?.errors?.description && <p className="text-sm font-medium text-destructive">{state.errors.description[0]}</p>}
           </div>
 
           <div>
             <label htmlFor="category">Kategori</label>
-            <Select name="category">
+             <input type="hidden" name="category" value={category} />
+            <Select onValueChange={setCategory} required>
                 <SelectTrigger>
                     <SelectValue placeholder="Pilih kategori prestasi" />
                 </SelectTrigger>

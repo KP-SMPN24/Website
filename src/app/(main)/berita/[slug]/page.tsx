@@ -1,11 +1,13 @@
-import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Calendar, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { NewsArticle } from '@prisma/client';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import type { NewsArticle } from '@/lib/types';
+
 
 type BeritaDetailPageProps = {
   params: {
@@ -14,14 +16,23 @@ type BeritaDetailPageProps = {
 };
 
 export async function generateStaticParams() {
-  const news = await prisma.newsArticle.findMany();
-  return news.map((news) => ({
+  const newsCollection = collection(db, 'newsArticles');
+  const newsSnapshot = await getDocs(newsCollection);
+  const newsList = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+  
+  return newsList.map((news) => ({
     slug: news.slug,
   }));
 }
 
 async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
-    return prisma.newsArticle.findUnique({ where: { slug } });
+    const q = query(collection(db, "newsArticles"), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const docData = querySnapshot.docs[0].data();
+    return { ...docData, id: querySnapshot.docs[0].id } as NewsArticle;
 }
 
 export default async function BeritaDetailPage({ params }: BeritaDetailPageProps) {
@@ -30,6 +41,9 @@ export default async function BeritaDetailPage({ params }: BeritaDetailPageProps
   if (!article) {
     notFound();
   }
+
+  // Convert Firebase Timestamp to Date if necessary
+  const articleDate = typeof article.date === 'string' ? new Date(article.date) : article.date.toDate();
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -42,7 +56,7 @@ export default async function BeritaDetailPage({ params }: BeritaDetailPageProps
           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
             <div className="flex items-center space-x-2">
               <Calendar className="h-4 w-4" />
-              <span>{format(new Date(article.date), "d MMMM yyyy", { locale: id })}</span>
+              <span>{format(articleDate, "d MMMM yyyy", { locale: id })}</span>
             </div>
             <div className="flex items-center space-x-2">
               <User className="h-4 w-4" />

@@ -20,14 +20,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import type { NewsArticle } from '@/lib/types';
+
+async function getAllNews() {
+    const newsCollection = collection(db, 'newsArticles');
+    const q = query(newsCollection, orderBy('date', 'desc'));
+    const newsSnapshot = await getDocs(q);
+    const newsList = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+    return newsList;
+}
 
 export default async function BeritaManagementPage() {
-  const allNews = await prisma.newsArticle.findMany({
-    orderBy: {
-      date: 'desc',
-    },
-  });
+  const allNews = await getAllNews();
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,34 +66,37 @@ export default async function BeritaManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allNews.map((article) => (
-                <TableRow key={article.id}>
-                  <TableCell className="font-medium">{article.title}</TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <Badge variant="outline">{article.category}</Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {format(new Date(article.date), "d MMMM yyyy", { locale: id })}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive focus:text-destructive">
-                          Hapus
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {allNews.map((article) => {
+                const articleDate = typeof article.date === 'string' ? new Date(article.date) : article.date.toDate();
+                return (
+                    <TableRow key={article.id}>
+                    <TableCell className="font-medium">{article.title}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                        <Badge variant="outline">{article.category}</Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                        {format(articleDate, "d MMMM yyyy", { locale: id })}
+                    </TableCell>
+                    <TableCell>
+                        <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button aria-haspopup="true" size="icon" variant="ghost">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive focus:text-destructive">
+                            Hapus
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                    </TableCell>
+                    </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </CardContent>

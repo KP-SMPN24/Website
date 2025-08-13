@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, FileText } from 'lucide-react';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 // Fungsi untuk mengubah URL Google Drive biasa menjadi URL embed
 function getEmbedUrl(url: string): string | null {
@@ -12,12 +13,18 @@ function getEmbedUrl(url: string): string | null {
   return null; // atau kembalikan URL asli jika tidak cocok
 }
 
+async function getAccreditationUrl() {
+    const settingRef = doc(db, 'settings', 'accreditationUrl');
+    const docSnap = await getDoc(settingRef);
+    if (docSnap.exists()) {
+        return docSnap.data().value;
+    }
+    return "";
+}
+
+
 export default async function AkreditasiPage() {
-  const accreditationUrlSetting = await prisma.setting.findUnique({
-    where: { key: 'accreditationUrl' },
-  });
-  
-  const originalPdfUrl = accreditationUrlSetting?.value || "";
+  const originalPdfUrl = await getAccreditationUrl();
   const embedUrl = getEmbedUrl(originalPdfUrl);
 
   return (

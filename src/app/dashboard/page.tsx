@@ -2,12 +2,19 @@ import Link from 'next/link';
 import { Newspaper, Trophy, PlusCircle, ArrowUpRight, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
+
+
+async function getCollectionCount(collectionName: string) {
+    const querySnapshot = await getDocs(collection(db, collectionName));
+    return querySnapshot.size;
+}
 
 export default async function DashboardPage() {
-  const totalNews = await prisma.newsArticle.count();
-  const totalAchievements = await prisma.achievement.count();
-  const totalStaff = await prisma.staff.count();
+  const totalNews = await getCollectionCount('newsArticles');
+  const totalAchievements = await getCollectionCount('achievements');
+  const totalStaff = await getCollectionCount('staff');
 
   return (
     <>

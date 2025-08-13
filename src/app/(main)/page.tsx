@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, BookOpen, Newspaper, Trophy } from 'lucide-react';
+import { ArrowRight, BookOpen, Newspaper, Trophy, Target, Milestone, Building, FlaskConical, Computer, Dumbbell } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -35,8 +35,8 @@ export default function HomePage() {
             </p>
             <div className="mt-8">
               <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="/berita">
-                  Jelajahi Lebih Lanjut <ArrowRight className="ml-2 h-5 w-5" />
+                <Link href="/penerimaan">
+                  Pendaftaran Siswa Baru <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
@@ -54,6 +54,9 @@ export default function HomePage() {
                 <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Di EduVerse, kami berkomitmen untuk menyediakan lingkungan belajar yang inspiratif dan mendukung, di mana setiap siswa dapat mencapai potensi penuh mereka. Dengan kurikulum yang inovatif dan fasilitas modern, kami mempersiapkan siswa untuk menghadapi tantangan global.
                 </p>
+                 <Button asChild variant="outline">
+                    <Link href="/profil">Selengkapnya Tentang Kami</Link>
+                </Button>
               </div>
               <Image
                 src="https://placehold.co/600x400"
@@ -66,6 +69,86 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <section id="visi-misi" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
+           <div className="container mx-auto px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+                <Badge className="bg-accent/10 text-accent-foreground hover:bg-accent/20">Visi & Misi</Badge>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Arah dan Tujuan Kami</h2>
+             </div>
+            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mt-12">
+                <Card className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                  <CardHeader className="flex-row items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-full">
+                        <Target className="w-8 h-8 text-primary" />
+                    </div>
+                    <CardTitle className="font-headline text-3xl">Visi</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      Menjadi sekolah unggul yang menghasilkan lulusan berkarakter mulia, cerdas, kompetitif secara global, dan cinta tanah air.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                  <CardHeader className="flex-row items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-full">
+                        <Milestone className="w-8 h-8 text-primary" />
+                    </div>
+                    <CardTitle className="font-headline text-3xl">Misi</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
+                      <li>Menyelenggarakan pendidikan berkualitas.</li>
+                      <li>Mengembangkan potensi siswa secara akademik dan non-akademik.</li>
+                      <li>Membekali siswa dengan keterampilan abad ke-21.</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="text-center mt-12">
+                <Button asChild variant="outline">
+                    <Link href="/profil/visi-misi">Lihat Selengkapnya</Link>
+                </Button>
+            </div>
+           </div>
+        </section>
+
+        <section id="fasilitas" className="w-full py-12 md:py-24 lg:py-32">
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="flex flex-col items-center justify-center space-y-4 text-center">
+                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Fasilitas</Badge>
+                    <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Lingkungan Belajar Modern</h2>
+                    <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                        Kami menyediakan fasilitas lengkap dan modern untuk mendukung proses belajar mengajar yang optimal.
+                    </p>
+                </div>
+                <div className="mx-auto grid grid-cols-2 gap-6 pt-12 sm:grid-cols-4 lg:grid-cols-4">
+                    <Card className="text-center p-4 transition-shadow duration-300 hover:shadow-lg">
+                        <Building className="h-10 w-10 mx-auto text-primary mb-2"/>
+                        <CardTitle className="text-md font-semibold">Ruang Kelas Modern</CardTitle>
+                    </Card>
+                    <Card className="text-center p-4 transition-shadow duration-300 hover:shadow-lg">
+                        <FlaskConical className="h-10 w-10 mx-auto text-primary mb-2"/>
+                        <CardTitle className="text-md font-semibold">Lab Sains & Bahasa</CardTitle>
+                    </Card>
+                    <Card className="text-center p-4 transition-shadow duration-300 hover:shadow-lg">
+                        <Computer className="h-10 w-10 mx-auto text-primary mb-2"/>
+                        <CardTitle className="text-md font-semibold">Lab Komputer</CardTitle>
+                    </Card>
+                    <Card className="text-center p-4 transition-shadow duration-300 hover:shadow-lg">
+                        <Dumbbell className="h-10 w-10 mx-auto text-primary mb-2"/>
+                        <CardTitle className="text-md font-semibold">Sarana Olahraga</CardTitle>
+                    </Card>
+                </div>
+                 <div className="text-center mt-12">
+                    <Button asChild variant="outline">
+                        <Link href="/profil">Lihat Semua Fasilitas</Link>
+                    </Button>
+                </div>
+            </div>
+        </section>
+
 
         <section id="news" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
           <div className="container mx-auto px-4 md:px-6">
@@ -80,18 +163,22 @@ export default function HomePage() {
               {latestNews.map((article) => (
                 <Card key={article.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
                   <CardHeader className="p-0">
-                    <Image
-                      src={article.imageUrl}
-                      width={400}
-                      height={250}
-                      alt={article.title}
-                      className="aspect-video w-full object-cover"
-                      data-ai-hint={article.category === 'Berita' ? "news event" : "announcement notice"}
-                    />
+                    <Link href={`/berita/${article.slug}`}>
+                      <Image
+                        src={article.imageUrl}
+                        width={400}
+                        height={250}
+                        alt={article.title}
+                        className="aspect-video w-full object-cover"
+                        data-ai-hint={article.category === 'Berita' ? "news event" : "announcement notice"}
+                      />
+                    </Link>
                   </CardHeader>
                   <CardContent className="p-6 flex-grow">
                     <Badge variant="outline" className="mb-2">{article.category}</Badge>
-                    <CardTitle className="text-xl h-16 leading-tight font-headline">{article.title}</CardTitle>
+                    <CardTitle className="text-xl h-16 leading-tight font-headline">
+                       <Link href={`/berita/${article.slug}`} className="hover:text-primary transition-colors">{article.title}</Link>
+                    </CardTitle>
                     <CardDescription className="mt-2 text-sm text-muted-foreground">
                       {format(new Date(article.date), "d MMMM yyyy", { locale: id })}
                     </CardDescription>

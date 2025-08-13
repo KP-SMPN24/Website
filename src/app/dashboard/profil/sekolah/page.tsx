@@ -5,12 +5,17 @@ import type { SchoolProfile } from '@/lib/types';
 
 
 async function getSchoolProfile(): Promise<SchoolProfile | null> {
-    const docRef = doc(db, "settings", "schoolProfile");
-    const docSnap = await getDoc(docRef);
+    try {
+        const docRef = doc(db, "settings", "schoolProfile");
+        const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-        return docSnap.data() as SchoolProfile;
-    } else {
+        if (docSnap.exists()) {
+            return docSnap.data() as SchoolProfile;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Failed to fetch school profile for dashboard, returning null.", error);
         return null;
     }
 }

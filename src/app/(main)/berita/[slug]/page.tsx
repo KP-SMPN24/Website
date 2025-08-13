@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import type { NewsArticle } from '@/lib/types';
 
 
@@ -16,23 +16,33 @@ type BeritaDetailPageProps = {
 };
 
 export async function generateStaticParams() {
-  const newsCollection = collection(db, 'newsArticles');
-  const newsSnapshot = await getDocs(newsCollection);
-  const newsList = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
-  
-  return newsList.map((news) => ({
-    slug: news.slug,
-  }));
+  try {
+    const newsCollection = collection(db, 'newsArticles');
+    const newsSnapshot = await getDocs(newsCollection);
+    const newsList = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+    
+    return newsList.map((news) => ({
+      slug: news.slug,
+    }));
+  } catch (error) {
+    console.error("Failed to generate static params for news, returning empty array.", error);
+    return [];
+  }
 }
 
 async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
-    const q = query(collection(db, "newsArticles"), where("slug", "==", slug));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
+    try {
+        const q = query(collection(db, "newsArticles"), where("slug", "==", slug));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            return null;
+        }
+        const docData = querySnapshot.docs[0].data();
+        return { ...docData, id: querySnapshot.docs[0].id } as NewsArticle;
+    } catch (error) {
+        console.error(`Failed to get news by slug: ${slug}`, error);
         return null;
     }
-    const docData = querySnapshot.docs[0].data();
-    return { ...docData, id: querySnapshot.docs[0].id } as NewsArticle;
 }
 
 export default async function BeritaDetailPage({ params }: BeritaDetailPageProps) {
@@ -42,8 +52,7 @@ export default async function BeritaDetailPage({ params }: BeritaDetailPageProps
     notFound();
   }
 
-  // Convert Firebase Timestamp to Date if necessary
-  const articleDate = typeof article.date === 'string' ? new Date(article.date) : article.date.toDate();
+  const articleDate = article.date instanceof Timestamp ? article.date.toDate() : new Date(article.date);
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">

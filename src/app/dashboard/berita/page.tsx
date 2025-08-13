@@ -21,15 +21,20 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, Timestamp } from 'firebase/firestore';
 import type { NewsArticle } from '@/lib/types';
 
-async function getAllNews() {
-    const newsCollection = collection(db, 'newsArticles');
-    const q = query(newsCollection, orderBy('date', 'desc'));
-    const newsSnapshot = await getDocs(q);
-    const newsList = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
-    return newsList;
+async function getAllNews(): Promise<NewsArticle[]> {
+    try {
+        const newsCollection = collection(db, 'newsArticles');
+        const q = query(newsCollection, orderBy('date', 'desc'));
+        const newsSnapshot = await getDocs(q);
+        const newsList = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+        return newsList;
+    } catch (error) {
+        console.error("Failed to fetch news for dashboard, returning empty array.", error);
+        return [];
+    }
 }
 
 export default async function BeritaManagementPage() {
@@ -67,7 +72,7 @@ export default async function BeritaManagementPage() {
             </TableHeader>
             <TableBody>
               {allNews.map((article) => {
-                const articleDate = typeof article.date === 'string' ? new Date(article.date) : article.date.toDate();
+                const articleDate = article.date instanceof Timestamp ? article.date.toDate() : new Date(article.date);
                 return (
                     <TableRow key={article.id}>
                     <TableCell className="font-medium">{article.title}</TableCell>

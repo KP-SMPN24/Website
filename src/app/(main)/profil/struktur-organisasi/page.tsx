@@ -4,13 +4,18 @@ import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { FileText } from 'lucide-react';
 
-async function getOrgChartUrl() {
-    const settingRef = doc(db, 'settings', 'orgChartUrl');
-    const docSnap = await getDoc(settingRef);
-    if (docSnap.exists()) {
-        return docSnap.data().value;
+async function getOrgChartUrl(): Promise<string> {
+    try {
+        const settingRef = doc(db, 'settings', 'orgChartUrl');
+        const docSnap = await getDoc(settingRef);
+        if (docSnap.exists()) {
+            return docSnap.data().value;
+        }
+        return "";
+    } catch (error) {
+        console.error("Failed to fetch org chart URL, returning empty.", error);
+        return "";
     }
-    return "";
 }
 
 export default async function StrukturOrganisasiPage() {

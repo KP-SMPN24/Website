@@ -6,10 +6,24 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import type { Staff } from '@/lib/types';
 
 
-async function getAllStaff() {
-    const staffCollection = collection(db, 'staff');
-    const staffSnapshot = await getDocs(staffCollection);
-    return staffSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Staff));
+async function getAllStaff(): Promise<Staff[]> {
+    const defaultStaff: Staff[] = Array(10).fill({
+        id: '1',
+        name: 'Nama Guru/Staf',
+        position: 'Jabatan',
+        category: 'Pendidik',
+        imageUrl: 'https://placehold.co/400x500.png'
+    });
+
+    try {
+        const staffCollection = collection(db, 'staff');
+        const staffSnapshot = await getDocs(staffCollection);
+        const staff = staffSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Staff));
+        return staff.length > 0 ? staff : defaultStaff;
+    } catch (error) {
+        console.error("Failed to fetch staff, returning default data.", error);
+        return defaultStaff;
+    }
 }
 
 export default async function GuruStaffPage() {

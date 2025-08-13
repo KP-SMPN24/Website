@@ -21,15 +21,20 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, Timestamp } from 'firebase/firestore';
 import type { Achievement } from '@/lib/types';
 
 
-async function getAllAchievements() {
-    const achievementsCollection = collection(db, 'achievements');
-    const q = query(achievementsCollection, orderBy('date', 'desc'));
-    const achievementsSnapshot = await getDocs(q);
-    return achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
+async function getAllAchievements(): Promise<Achievement[]> {
+    try {
+        const achievementsCollection = collection(db, 'achievements');
+        const q = query(achievementsCollection, orderBy('date', 'desc'));
+        const achievementsSnapshot = await getDocs(q);
+        return achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
+    } catch (error) {
+        console.error("Failed to fetch achievements for dashboard, returning empty array.", error);
+        return [];
+    }
 }
 
 
@@ -67,34 +72,37 @@ export default async function PrestasiManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allAchievements.map((achievement) => (
-                <TableRow key={achievement.id}>
-                  <TableCell className="font-medium">{achievement.title}</TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <Badge variant="outline">{achievement.category}</Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {format(new Date(achievement.date), "d MMMM yyyy", { locale: id })}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive focus:text-destructive">
-                          Hapus
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {allAchievements.map((achievement) => {
+                 const achievementDate = achievement.date instanceof Timestamp ? achievement.date.toDate() : new Date(achievement.date);
+                 return (
+                    <TableRow key={achievement.id}>
+                      <TableCell className="font-medium">{achievement.title}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Badge variant="outline">{achievement.category}</Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {format(achievementDate, "d MMMM yyyy", { locale: id })}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button aria-haspopup="true" size="icon" variant="ghost">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive focus:text-destructive">
+                              Hapus
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                 )
+              })}
             </TableBody>
           </Table>
         </CardContent>

@@ -4,22 +4,26 @@ import { Download, FileText } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
-// Fungsi untuk mengubah URL Google Drive biasa menjadi URL embed
 function getEmbedUrl(url: string): string | null {
   const fileIdMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
   if (fileIdMatch && fileIdMatch[1]) {
     return `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
   }
-  return null; // atau kembalikan URL asli jika tidak cocok
+  return null;
 }
 
-async function getAccreditationUrl() {
-    const settingRef = doc(db, 'settings', 'accreditationUrl');
-    const docSnap = await getDoc(settingRef);
-    if (docSnap.exists()) {
-        return docSnap.data().value;
+async function getAccreditationUrl(): Promise<string> {
+    try {
+        const settingRef = doc(db, 'settings', 'accreditationUrl');
+        const docSnap = await getDoc(settingRef);
+        if (docSnap.exists()) {
+            return docSnap.data().value;
+        }
+        return "";
+    } catch (error) {
+        console.error("Failed to fetch accreditation URL, returning empty string.", error);
+        return "";
     }
-    return "";
 }
 
 

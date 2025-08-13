@@ -24,10 +24,15 @@ import { collection, getDocs } from 'firebase/firestore';
 import type { Staff } from '@/lib/types';
 
 
-async function getAllStaff() {
-    const staffCollection = collection(db, 'staff');
-    const staffSnapshot = await getDocs(staffCollection);
-    return staffSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Staff));
+async function getAllStaff(): Promise<Staff[]> {
+    try {
+        const staffCollection = collection(db, 'staff');
+        const staffSnapshot = await getDocs(staffCollection);
+        return staffSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Staff));
+    } catch (error) {
+        console.error("Failed to fetch staff for dashboard, returning empty array.", error);
+        return [];
+    }
 }
 
 export default async function GuruStaffManagementPage() {

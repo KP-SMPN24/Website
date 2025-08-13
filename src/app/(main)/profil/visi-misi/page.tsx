@@ -6,17 +6,23 @@ import type { VisionMission } from '@/lib/types';
 
 
 async function getVisionMission(): Promise<VisionMission> {
-    const docRef = doc(db, "settings", "visionMission");
-    const docSnap = await getDoc(docRef);
+    const defaultData: VisionMission = {
+        vision: "Menjadi sekolah unggul yang menghasilkan lulusan berkarakter mulia, cerdas, kompetitif secara global, dan cinta tanah air.",
+        mission: `<ul><li>Menyelenggarakan pendidikan berkualitas yang mengintegrasikan iman dan takwa.</li><li>Mengembangkan potensi siswa secara akademik dan non-akademik.</li><li>Membekali siswa dengan keterampilan abad ke-21.</li><li>Membangun jiwa kepemimpinan dan kepedulian sosial.</li></ul>`
+    };
 
-    if (docSnap.exists()) {
-        return docSnap.data() as VisionMission;
-    } else {
-        // Return default values if not found
-        return {
-            vision: "Menjadi sekolah unggul yang menghasilkan lulusan berkarakter mulia, cerdas, kompetitif secara global, dan cinta tanah air.",
-            mission: `<ul><li>Menyelenggarakan pendidikan berkualitas yang mengintegrasikan iman dan takwa.</li><li>Mengembangkan potensi siswa secara akademik dan non-akademik.</li><li>Membekali siswa dengan keterampilan abad ke-21.</li><li>Membangun jiwa kepemimpinan dan kepedulian sosial.</li></ul>`
-        };
+    try {
+        const docRef = doc(db, "settings", "visionMission");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return docSnap.data() as VisionMission;
+        } else {
+            return defaultData;
+        }
+    } catch (error) {
+        console.error("Failed to fetch vision/mission, returning default data.", error);
+        return defaultData;
     }
 }
 

@@ -7,22 +7,47 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query, Timestamp } from 'firebase/firestore';
 import type { NewsArticle, Achievement } from '@/lib/types';
 
 
 async function getLatestData() {
-    const newsCollection = collection(db, 'newsArticles');
-    const newsQuery = query(newsCollection, orderBy('date', 'desc'), limit(3));
-    const newsSnapshot = await getDocs(newsQuery);
-    const latestNews = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+    const defaultNews: NewsArticle[] = Array(3).fill({
+        id: '1',
+        slug: 'default-news',
+        title: 'Judul Berita Contoh',
+        content: '',
+        author: 'Admin',
+        date: new Date().toISOString(),
+        imageUrl: 'https://placehold.co/400x250.png',
+        category: 'Berita',
+    });
 
-    const achievementsCollection = collection(db, 'achievements');
-    const achievementsQuery = query(achievementsCollection, orderBy('date', 'desc'), limit(3));
-    const achievementsSnapshot = await getDocs(achievementsQuery);
-    const featuredAchievements = achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
+    const defaultAchievements: Achievement[] = Array(3).fill({
+        id: '1',
+        title: 'Prestasi Contoh',
+        description: 'Deskripsi prestasi',
+        date: new Date().toISOString(),
+        imageUrl: 'https://placehold.co/600x400.png',
+        category: 'Akademik'
+    });
     
-    return { latestNews, featuredAchievements };
+    try {
+        const newsCollection = collection(db, 'newsArticles');
+        const newsQuery = query(newsCollection, orderBy('date', 'desc'), limit(3));
+        const newsSnapshot = await getDocs(newsQuery);
+        const latestNews = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+
+        const achievementsCollection = collection(db, 'achievements');
+        const achievementsQuery = query(achievementsCollection, orderBy('date', 'desc'), limit(3));
+        const achievementsSnapshot = await getDocs(achievementsQuery);
+        const featuredAchievements = achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
+        
+        return { latestNews: latestNews.length ? latestNews : defaultNews, featuredAchievements: featuredAchievements.length ? featuredAchievements : defaultAchievements };
+    } catch (error) {
+        console.error("Failed to fetch latest data, returning defaults:", error);
+        return { latestNews: defaultNews, featuredAchievements: defaultAchievements };
+    }
 }
 
 
@@ -188,7 +213,7 @@ export default async function HomePage() {
             </div>
             <div className="mx-auto grid grid-cols-1 gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3">
               {latestNews.map((article) => {
-                 const articleDate = typeof article.date === 'string' ? new Date(article.date) : article.date.toDate();
+                 const articleDate = article.date instanceof Timestamp ? article.date.toDate() : new Date(article.date);
                  return (
                     <Card key={article.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
                     <CardHeader className="p-0">
@@ -241,27 +266,30 @@ export default async function HomePage() {
               </p>
             </div>
             <div className="mx-auto grid grid-cols-1 gap-8 pt-12 sm:grid-cols-2 lg:grid-cols-3">
-              {featuredAchievements.map((achievement) => (
-                <Card key={achievement.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-                  <CardHeader className="p-0">
-                     <Image
-                        src={achievement.imageUrl}
-                        alt={achievement.title}
-                        width={600}
-                        height={400}
-                        className="w-full object-cover aspect-video"
-                        data-ai-hint="student achievement trophy"
-                      />
-                  </CardHeader>
-                  <CardContent className="p-6 flex-grow">
-                    <Badge variant="secondary" className="mb-2">{achievement.category}</Badge>
-                    <CardTitle className="text-xl font-headline h-16">{achievement.title}</CardTitle>
-                    <CardDescription className="text-sm mt-2">
-                       {format(new Date(achievement.date), "d MMMM yyyy", { locale: id })}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              ))}
+              {featuredAchievements.map((achievement) => {
+                 const achievementDate = achievement.date instanceof Timestamp ? achievement.date.toDate() : new Date(achievement.date);
+                 return (
+                    <Card key={achievement.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
+                      <CardHeader className="p-0">
+                         <Image
+                            src={achievement.imageUrl}
+                            alt={achievement.title}
+                            width={600}
+                            height={400}
+                            className="w-full object-cover aspect-video"
+                            data-ai-hint="student achievement trophy"
+                          />
+                      </CardHeader>
+                      <CardContent className="p-6 flex-grow">
+                        <Badge variant="secondary" className="mb-2">{achievement.category}</Badge>
+                        <CardTitle className="text-xl font-headline h-16">{achievement.title}</CardTitle>
+                        <CardDescription className="text-sm mt-2">
+                           {format(achievementDate, "d MMMM yyyy", { locale: id })}
+                        </CardDescription>
+                      </CardContent>
+                    </Card>
+                  )
+              })}
             </div>
             <div className="text-center mt-12">
               <Button asChild variant="outline">

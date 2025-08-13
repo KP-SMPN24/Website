@@ -7,16 +7,32 @@ import { ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, Timestamp } from 'firebase/firestore';
 import type { NewsArticle } from '@/lib/types';
 
 
-async function getAllNews() {
-    const newsCollection = collection(db, 'newsArticles');
-    const q = query(newsCollection, orderBy('date', 'desc'));
-    const newsSnapshot = await getDocs(q);
-    const newsList = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
-    return newsList;
+async function getAllNews(): Promise<NewsArticle[]> {
+    const defaultNews: NewsArticle[] = Array(6).fill({
+        id: '1',
+        slug: 'default-news',
+        title: 'Judul Berita Contoh Saat Offline',
+        content: '',
+        author: 'Admin',
+        date: new Date().toISOString(),
+        imageUrl: 'https://placehold.co/600x400.png',
+        category: 'Berita',
+    });
+
+    try {
+        const newsCollection = collection(db, 'newsArticles');
+        const q = query(newsCollection, orderBy('date', 'desc'));
+        const newsSnapshot = await getDocs(q);
+        const newsList = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+        return newsList.length > 0 ? newsList : defaultNews;
+    } catch (error) {
+        console.error("Failed to fetch news, returning default data.", error);
+        return defaultNews;
+    }
 }
 
 
@@ -35,7 +51,7 @@ export default async function BeritaPage() {
       </div>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {allNews.map((article) => {
-            const articleDate = typeof article.date === 'string' ? new Date(article.date) : article.date.toDate();
+            const articleDate = article.date instanceof Timestamp ? article.date.toDate() : new Date(article.date);
             return (
                 <Card key={article.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
                     <CardHeader className="p-0">

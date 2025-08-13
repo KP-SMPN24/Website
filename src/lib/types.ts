@@ -15,7 +15,7 @@ export type Achievement = {
   id: string;
   title: string;
   description: string;
-  date: string;
+  date: string | Timestamp;
   imageUrl: string;
   category: 'Akademik' | 'Olahraga' | 'Seni' | 'Lainnya';
 };

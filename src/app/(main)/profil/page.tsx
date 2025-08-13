@@ -6,29 +6,31 @@ import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import type { SchoolProfile } from '@/lib/types';
 
-async function getSchoolProfile(): Promise<SchoolProfile | null> {
-    const docRef = doc(db, "settings", "schoolProfile");
-    const docSnap = await getDoc(docRef);
+async function getSchoolProfile(): Promise<SchoolProfile> {
+    const defaultProfile: SchoolProfile = {
+        principalName: "Dr. Siti Aminah, M.Pd.",
+        principalWelcome: `<p>"Selamat datang di SMA EduVerse! Kami bangga menjadi lembaga pendidikan yang berkomitmen pada keunggulan akademik dan pembentukan karakter. Di sini, kami tidak hanya mengajar, tetapi juga menginspirasi setiap siswa untuk menemukan dan mengembangkan potensi terbaik mereka."</p><p>"Dengan dukungan fasilitas modern, kurikulum yang relevan, dan tenaga pendidik profesional, kami menciptakan lingkungan belajar yang kondusif dan inovatif. Mari bersama-sama kita wujudkan masa depan yang gemilang bagi putra-putri kita."</p>`,
+        principalImageUrl: "https://placehold.co/400x500.png"
+    };
 
-    if (docSnap.exists()) {
-        return docSnap.data() as SchoolProfile;
-    } else {
-        // Return a default profile if not found
-        return {
-            principalName: "Dr. Siti Aminah, M.Pd.",
-            principalWelcome: `<p>"Selamat datang di SMA EduVerse! Kami bangga menjadi lembaga pendidikan yang berkomitmen pada keunggulan akademik dan pembentukan karakter. Di sini, kami tidak hanya mengajar, tetapi juga menginspirasi setiap siswa untuk menemukan dan mengembangkan potensi terbaik mereka."</p><p>"Dengan dukungan fasilitas modern, kurikulum yang relevan, dan tenaga pendidik profesional, kami menciptakan lingkungan belajar yang kondusif dan inovatif. Mari bersama-sama kita wujudkan masa depan yang gemilang bagi putra-putri kita."</p>`,
-            principalImageUrl: "https://placehold.co/400x500.png"
-        };
+    try {
+        const docRef = doc(db, "settings", "schoolProfile");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return docSnap.data() as SchoolProfile;
+        } else {
+            return defaultProfile;
+        }
+    } catch (error) {
+        console.error("Failed to fetch school profile, returning default data.", error);
+        return defaultProfile;
     }
 }
 
 
 export default async function ProfilPage() {
   const profile = await getSchoolProfile();
-
-  if (!profile) {
-    return <div>Profil sekolah tidak ditemukan.</div>
-  }
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">

@@ -5,12 +5,17 @@ import type { VisionMission } from '@/lib/types';
 
 
 async function getVisionMission(): Promise<VisionMission | null> {
-    const docRef = doc(db, "settings", "visionMission");
-    const docSnap = await getDoc(docRef);
+    try {
+        const docRef = doc(db, "settings", "visionMission");
+        const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-        return docSnap.data() as VisionMission;
-    } else {
+        if (docSnap.exists()) {
+            return docSnap.data() as VisionMission;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Failed to fetch vision/mission for dashboard, returning null.", error);
         return null;
     }
 }

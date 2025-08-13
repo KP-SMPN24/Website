@@ -6,9 +6,14 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 
-async function getCollectionCount(collectionName: string) {
-    const querySnapshot = await getDocs(collection(db, collectionName));
-    return querySnapshot.size;
+async function getCollectionCount(collectionName: string): Promise<number> {
+    try {
+        const querySnapshot = await getDocs(collection(db, collectionName));
+        return querySnapshot.size;
+    } catch (error) {
+        console.error(`Failed to get count for ${collectionName}, returning 0.`, error);
+        return 0;
+    }
 }
 
 export default async function DashboardPage() {

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { Target, Milestone, Users, GraduationCap } from 'lucide-react';
+import { Target, Milestone, Users, GraduationCap, Computer, Dumbbell } from 'lucide-react';
 
 export default function ProfilPage() {
   return (

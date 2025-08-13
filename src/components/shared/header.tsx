@@ -26,7 +26,6 @@ const navLinks = [
     ]
   },
   { href: '/akademik', label: 'Akademik' },
-  { href: '/penerimaan', label: 'Penerimaan' },
   { href: '/berita', label: 'Berita' },
   { href: '/prestasi', label: 'Prestasi' },
   { href: '/kontak', label: 'Kontak' },

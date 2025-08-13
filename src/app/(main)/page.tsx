@@ -56,13 +56,6 @@ export default function HomePage() {
             <p className="max-w-[700px] text-lg md:text-xl mt-4 animate-fade-in-up">
               Membentuk masa depan cerah melalui pendidikan berkualitas dan inovasi tanpa henti.
             </p>
-            <div className="mt-8 animate-fade-in-up animation-delay-300">
-              <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="/penerimaan">
-                  Pendaftaran Siswa Baru <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
           </div>
         </section>
 

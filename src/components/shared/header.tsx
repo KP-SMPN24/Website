@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { GraduationCap, Menu, UserCircle, ChevronDown } from 'lucide-react';
+import { GraduationCap, Menu, UserCircle, ChevronDown, Facebook, Twitter, Instagram } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,19 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="bg-muted/50 text-muted-foreground py-1 border-b">
+        <div className="container flex justify-between items-center h-8 text-xs">
+           <p className="hidden sm:block">Membentuk Generasi Unggul dan Berkarakter</p>
+            <div className="flex items-center gap-4">
+              <p>info@eduverse.sch.id</p>
+              <div className="flex space-x-3">
+                  <Link href="#" className="hover:text-primary transition-colors"><Facebook size={16} /></Link>
+                  <Link href="#" className="hover:text-primary transition-colors"><Twitter size={16} /></Link>
+                  <Link href="#" className="hover:text-primary transition-colors"><Instagram size={16} /></Link>
+              </div>
+            </div>
+        </div>
+      </div>
       <div className="container flex h-16 items-center">
         <div className="mr-4 hidden lg:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">

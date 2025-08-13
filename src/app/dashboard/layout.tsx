@@ -9,6 +9,7 @@ import {
   Trophy,
   PanelLeft,
   Users,
+  Settings,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -39,6 +40,7 @@ const menuItems = [
   { href: '/dashboard/berita', label: 'Berita', icon: Newspaper },
   { href: '/dashboard/prestasi', label: 'Prestasi', icon: Trophy },
   { href: '/dashboard/guru-staff', label: 'Guru & Staf', icon: Users },
+  { href: '/dashboard/pengaturan', label: 'Pengaturan', icon: Settings },
 ];
 
 export default function DashboardLayout({
@@ -63,9 +65,9 @@ export default function DashboardLayout({
               <SidebarMenuItem key={item.href}>
                 <Link href={item.href}>
                   <SidebarMenuButton
-                    isActive={pathname.startsWith(item.href)}
+                    isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
                     className={cn(
-                      pathname.startsWith(item.href) && "bg-sidebar-accent text-sidebar-accent-foreground"
+                      (pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')) && "bg-sidebar-accent text-sidebar-accent-foreground"
                     )}
                   >
                     <item.icon className="size-4" />

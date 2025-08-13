@@ -52,19 +52,19 @@ export default function ProfilPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className="text-center p-6">
-                <GraduationCap className="h-10 w-10 mx-auto text-accent mb-2"/>
+                <GraduationCap className="h-10 w-10 mx-auto text-primary mb-2"/>
                 <CardTitle className="text-lg font-semibold">Ruang Kelas Modern</CardTitle>
             </Card>
              <Card className="text-center p-6">
-                <Users className="h-10 w-10 mx-auto text-accent mb-2"/>
+                <Users className="h-10 w-10 mx-auto text-primary mb-2"/>
                 <CardTitle className="text-lg font-semibold">Perpustakaan Digital</CardTitle>
             </Card>
              <Card className="text-center p-6">
-                <Computer className="h-10 w-10 mx-auto text-accent mb-2"/>
+                <Computer className="h-10 w-10 mx-auto text-primary mb-2"/>
                 <CardTitle className="text-lg font-semibold">Laboratorium Komputer</CardTitle>
             </Card>
              <Card className="text-center p-6">
-                <Dumbbell className="h-10 w-10 mx-auto text-accent mb-2"/>
+                <Dumbbell className="h-10 w-10 mx-auto text-primary mb-2"/>
                 <CardTitle className="text-lg font-semibold">Sarana Olahraga</CardTitle>
             </Card>
         </div>

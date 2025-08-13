@@ -20,6 +20,7 @@ const navLinks = [
     label: 'Profil',
     items: [
       { href: '/profil', label: 'Profil Sekolah' },
+      { href: '/profil/visi-misi', label: 'Visi & Misi' },
       { href: '/profil/akreditasi', label: 'Akreditasi' },
     ]
   },

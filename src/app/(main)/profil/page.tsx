@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { Target, Milestone, Users, GraduationCap, Computer, Dumbbell } from 'lucide-react';
+import { Users, GraduationCap, Computer, Dumbbell } from 'lucide-react';
 
 export default function ProfilPage() {
   return (
@@ -46,36 +46,6 @@ export default function ProfilPage() {
         </Card>
       </section>
 
-      <section id="visi-misi" className="mb-16">
-        <div className="grid md:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader className="flex-row items-center gap-4">
-              <Target className="w-10 h-10 text-primary" />
-              <CardTitle className="font-headline text-2xl">Visi</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Menjadi sekolah unggul yang menghasilkan lulusan berkarakter mulia, cerdas, kompetitif secara global, dan cinta tanah air.
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex-row items-center gap-4">
-              <Milestone className="w-10 h-10 text-primary" />
-              <CardTitle className="font-headline text-2xl">Misi</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
-                <li>Menyelenggarakan pendidikan berkualitas yang mengintegrasikan iman dan takwa.</li>
-                <li>Mengembangkan potensi siswa secara akademik dan non-akademik.</li>
-                <li>Membekali siswa dengan keterampilan abad ke-21.</li>
-                <li>Membangun jiwa kepemimpinan dan kepedulian sosial.</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-      
       <section id="fasilitas">
         <div className="text-center mb-8">
           <Badge variant="secondary" className="text-lg">Fasilitas Unggulan</Badge>

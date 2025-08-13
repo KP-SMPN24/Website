@@ -1,17 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Medal, Award, Star } from 'lucide-react';
 import type { Achievement } from '@/lib/types';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-
-
-const categoryIcons: { [key in Achievement['category']]: React.ReactNode } = {
-  Akademik: <Trophy className="h-8 w-8 text-accent-foreground" />,
-  Olahraga: <Medal className="h-8 w-8 text-accent-foreground" />,
-  Seni: <Award className="h-8 w-8 text-accent-foreground" />,
-  Lainnya: <Star className="h-8 w-8 text-accent-foreground" />,
-};
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 async function getAllAchievements() {
     const achievementsCollection = collection(db, 'achievements');
@@ -19,7 +13,6 @@ async function getAllAchievements() {
     const achievementsSnapshot = await getDocs(q);
     return achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
 }
-
 
 export default async function PrestasiPage() {
   const achievements = await getAllAchievements();
@@ -37,17 +30,26 @@ export default async function PrestasiPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {achievements.map((achievement) => (
-          <Card key={achievement.id} className="flex flex-col items-center text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-            <div className="p-4 bg-accent rounded-full mb-4">
-              {categoryIcons[achievement.category]}
-            </div>
+          <Card key={achievement.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
             <CardHeader className="p-0">
+               <Image
+                  src={achievement.imageUrl}
+                  alt={achievement.title}
+                  width={600}
+                  height={400}
+                  className="w-full object-cover aspect-video"
+                  data-ai-hint="student achievement award"
+                />
+            </CardHeader>
+            <CardContent className="p-6 flex-grow">
               <Badge variant="secondary" className="mb-2">{achievement.category}</Badge>
               <CardTitle className="text-xl font-headline">{achievement.title}</CardTitle>
-            </CardHeader>
-            <CardContent className="mt-2 text-muted-foreground">
-              <p>{achievement.description}</p>
-              <p className="text-xs mt-4">{new Date(achievement.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <CardDescription className="text-sm mt-2 text-muted-foreground">
+                {achievement.description}
+              </CardDescription>
+            </CardContent>
+            <CardContent className="p-6 pt-0">
+               <p className="text-xs text-muted-foreground">{format(new Date(achievement.date), "d MMMM yyyy", { locale: id })}</p>
             </CardContent>
           </Card>
         ))}

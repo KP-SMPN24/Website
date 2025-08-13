@@ -240,17 +240,25 @@ export default async function HomePage() {
                 Kami bangga dengan berbagai prestasi yang telah diraih oleh siswa dan sekolah kami di berbagai bidang.
               </p>
             </div>
-            <div className="mx-auto grid grid-cols-1 gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mx-auto grid grid-cols-1 gap-8 pt-12 sm:grid-cols-2 lg:grid-cols-3">
               {featuredAchievements.map((achievement) => (
-                <Card key={achievement.id} className="flex flex-col text-center items-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                  <div className="p-4 bg-accent rounded-full mb-4">
-                    <Trophy className="h-8 w-8 text-accent-foreground" />
-                  </div>
+                <Card key={achievement.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
                   <CardHeader className="p-0">
-                    <CardTitle className="text-lg font-semibold font-headline">{achievement.title}</CardTitle>
+                     <Image
+                        src={achievement.imageUrl}
+                        alt={achievement.title}
+                        width={600}
+                        height={400}
+                        className="w-full object-cover aspect-video"
+                        data-ai-hint="student achievement trophy"
+                      />
                   </CardHeader>
-                  <CardContent className="p-0 mt-2 flex-grow">
-                    <p className="text-sm text-muted-foreground">{achievement.description}</p>
+                  <CardContent className="p-6 flex-grow">
+                    <Badge variant="secondary" className="mb-2">{achievement.category}</Badge>
+                    <CardTitle className="text-xl font-headline h-16">{achievement.title}</CardTitle>
+                    <CardDescription className="text-sm mt-2">
+                       {format(new Date(achievement.date), "d MMMM yyyy", { locale: id })}
+                    </CardDescription>
                   </CardContent>
                 </Card>
               ))}

@@ -32,3 +32,14 @@ export type Setting = {
     id: string;
     value: string;
 };
+
+export type VisionMission = {
+    vision: string;
+    mission: string;
+};
+
+export type SchoolProfile = {
+    principalName: string;
+    principalWelcome: string;
+    principalImageUrl: string;
+};

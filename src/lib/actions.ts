@@ -117,12 +117,12 @@ export async function createStaff(prevState: any, formData: FormData) {
     // redirect('/dashboard/guru-staff');
 }
 
-const SettingsSchema = z.object({
+const AccreditationSchema = z.object({
   accreditationUrl: z.string().url().optional().or(z.literal('')),
 });
 
-export async function updateSettings(prevState: any, formData: FormData) {
-  const validatedFields = SettingsSchema.safeParse({
+export async function updateAccreditation(prevState: any, formData: FormData) {
+  const validatedFields = AccreditationSchema.safeParse({
     accreditationUrl: formData.get('accreditationUrl'),
   });
 
@@ -134,9 +134,8 @@ export async function updateSettings(prevState: any, formData: FormData) {
   }
 
   try {
-    // Use the document ID 'accreditation' to store this specific setting
     const settingRef = doc(db, 'settings', 'accreditationUrl');
-    await setDoc(settingRef, { value: validatedFields.data.accreditationUrl || '' });
+    await setDoc(settingRef, { value: validatedFields.data.accreditationUrl || '' }, { merge: true });
 
   } catch (error) {
     return {
@@ -144,8 +143,104 @@ export async function updateSettings(prevState: any, formData: FormData) {
     };
   }
 
-  revalidatePath('/dashboard/pengaturan');
+  revalidatePath('/dashboard/profil/akreditasi');
   revalidatePath('/profil/akreditasi');
   
-  return { message: 'Pengaturan berhasil disimpan!' };
+  return { message: 'Pengaturan akreditasi berhasil disimpan!' };
+}
+
+
+const VisionMissionSchema = z.object({
+    vision: z.string().min(20, { message: "Visi harus lebih dari 20 karakter."}),
+    mission: z.string().min(50, { message: "Misi harus lebih dari 50 karakter."}),
+});
+
+export async function updateVisionMission(prevState: any, formData: FormData) {
+    const validatedFields = VisionMissionSchema.safeParse({
+        vision: formData.get('vision'),
+        mission: formData.get('mission'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Gagal memperbarui Visi & Misi.',
+        };
+    }
+
+    try {
+        const settingRef = doc(db, 'settings', 'visionMission');
+        await setDoc(settingRef, validatedFields.data, { merge: true });
+    } catch (e) {
+        return { message: 'Gagal menyimpan ke database.' };
+    }
+
+    revalidatePath('/dashboard/profil/visi-misi');
+    revalidatePath('/profil/visi-misi');
+    return { message: 'Visi & Misi berhasil diperbarui.' };
+}
+
+
+const SchoolProfileSchema = z.object({
+    principalName: z.string().min(3),
+    principalWelcome: z.string().min(50),
+    principalImageUrl: z.string().url().optional().or(z.literal('')),
+});
+
+export async function updateSchoolProfile(prevState: any, formData: FormData) {
+    const validatedFields = SchoolProfileSchema.safeParse({
+        principalName: formData.get('principalName'),
+        principalWelcome: formData.get('principalWelcome'),
+        principalImageUrl: formData.get('principalImageUrl'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Gagal memperbarui profil sekolah.',
+        };
+    }
+
+    try {
+        const settingRef = doc(db, 'settings', 'schoolProfile');
+        await setDoc(settingRef, validatedFields.data, { merge: true });
+    } catch (e) {
+        return { message: 'Gagal menyimpan profil sekolah ke database.' };
+    }
+
+    revalidatePath('/dashboard/profil/sekolah');
+    revalidatePath('/profil');
+    return { message: 'Profil sekolah berhasil diperbarui.' };
+}
+
+const OrgChartSchema = z.object({
+  orgChartUrl: z.string().url().optional().or(z.literal('')),
+});
+
+export async function updateOrgChart(prevState: any, formData: FormData) {
+  const validatedFields = OrgChartSchema.safeParse({
+    orgChartUrl: formData.get('orgChartUrl'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Gagal memperbarui struktur organisasi.',
+    };
+  }
+
+  try {
+    const settingRef = doc(db, 'settings', 'orgChartUrl');
+    await setDoc(settingRef, { value: validatedFields.data.orgChartUrl || '' }, { merge: true });
+
+  } catch (error) {
+    return {
+      message: 'Database Error: Gagal Memperbarui struktur organisasi.',
+    };
+  }
+
+  revalidatePath('/dashboard/profil/struktur-organisasi');
+  revalidatePath('/profil/struktur-organisasi');
+  
+  return { message: 'Struktur organisasi berhasil disimpan!' };
 }

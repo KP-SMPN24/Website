@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { GraduationCap, Menu, UserCircle, ChevronDown, Facebook, Twitter, Instagram } from 'lucide-react';
+import { GraduationCap, Menu, UserCircle, ChevronDown, Facebook, Twitter, Instagram, Landmark, Info, Users, FileBadge, GanttChartSquare } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,10 +19,11 @@ const navLinks = [
   { 
     label: 'Profil',
     items: [
-      { href: '/profil', label: 'Profil Sekolah' },
-      { href: '/profil/visi-misi', label: 'Visi & Misi' },
-      { href: '/profil/guru-staff', label: 'Guru & Staf' },
-      { href: '/profil/akreditasi', label: 'Akreditasi' },
+      { href: '/profil', label: 'Profil Sekolah', icon: Info },
+      { href: '/profil/visi-misi', label: 'Visi & Misi', icon: Landmark },
+      { href: '/profil/guru-staff', label: 'Guru & Staf', icon: Users },
+      { href: '/profil/akreditasi', label: 'Akreditasi', icon: FileBadge },
+      { href: '/profil/struktur-organisasi', label: 'Struktur Organisasi', icon: GanttChartSquare },
     ]
   },
   { href: '/akademik', label: 'Akademik' },
@@ -73,7 +74,7 @@ export function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className={cn(
                       'flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors hover:text-foreground/80',
-                      link.items.some(item => pathname.startsWith(item.href)) ? 'text-foreground' : 'text-foreground/60'
+                      link.items.some(item => pathname.startsWith(item.href)) ? 'text-foreground bg-muted' : 'text-foreground/60'
                     )}>
                       {link.label}
                       <ChevronDown className="h-4 w-4" />
@@ -82,7 +83,10 @@ export function Header() {
                   <DropdownMenuContent>
                     {link.items.map((item, itemIndex) => (
                        <DropdownMenuItem key={itemIndex} asChild>
-                         <Link href={item.href}>{item.label}</Link>
+                         <Link href={item.href} className="flex items-center gap-2">
+                            <item.icon className="w-4 h-4 text-muted-foreground" />
+                            {item.label}
+                        </Link>
                        </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -129,10 +133,11 @@ export function Header() {
                                 key={itemIndex}
                                 href={item.href}
                                 className={cn(
-                                  'transition-colors hover:text-foreground/80',
+                                  'transition-colors hover:text-foreground/80 py-1 flex items-center gap-2',
                                   pathname === item.href ? 'text-foreground font-semibold' : 'text-foreground/60'
                                 )}
                               >
+                                <item.icon className="w-4 h-4" />
                                 {item.label}
                               </Link>
                           ))}

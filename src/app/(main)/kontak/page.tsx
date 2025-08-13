@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { MapPin, Phone, Mail } from 'lucide-react';
-import Image from 'next/image';
 
 export default function KontakPage() {
   return (
@@ -64,14 +63,16 @@ export default function KontakPage() {
         </div>
         
         <div className="rounded-lg overflow-hidden h-96 md:h-full">
-            <Image 
-                src="https://placehold.co/600x800"
-                alt="Peta Lokasi Sekolah"
-                width={600}
-                height={800}
-                className="w-full h-full object-cover"
-                data-ai-hint="map location"
-            />
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576882253961!2d106.8271833!3d-6.186419399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f43a9e324031%3A0x8618f2624867d587!2sMonumen%20Nasional!5e0!3m2!1sid!2sid!4v1700000000000"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen={false}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Peta Lokasi Sekolah"
+          ></iframe>
         </div>
       </div>
     </div>

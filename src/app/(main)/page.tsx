@@ -33,17 +33,20 @@ async function getLatestData() {
     });
     
     try {
-        const newsCollection = collection(db, 'newsArticles');
-        const newsQuery = query(newsCollection, orderBy('date', 'desc'), limit(3));
+        const newsCollectionRef = collection(db, 'newsArticles');
+        const newsQuery = query(newsCollectionRef, orderBy('date', 'desc'), limit(3));
         const newsSnapshot = await getDocs(newsQuery);
         const latestNews = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
 
-        const achievementsCollection = collection(db, 'achievements');
-        const achievementsQuery = query(achievementsCollection, orderBy('date', 'desc'), limit(3));
+        const achievementsCollectionRef = collection(db, 'achievements');
+        const achievementsQuery = query(achievementsCollectionRef, orderBy('date', 'desc'), limit(3));
         const achievementsSnapshot = await getDocs(achievementsQuery);
         const featuredAchievements = achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
         
-        return { latestNews: latestNews.length ? latestNews : defaultNews, featuredAchievements: featuredAchievements.length ? featuredAchievements : defaultAchievements };
+        return { 
+            latestNews: latestNews.length ? latestNews : defaultNews, 
+            featuredAchievements: featuredAchievements.length ? featuredAchievements : defaultAchievements 
+        };
     } catch (error) {
         console.error("Failed to fetch latest data, returning defaults:", error);
         return { latestNews: defaultNews, featuredAchievements: defaultAchievements };

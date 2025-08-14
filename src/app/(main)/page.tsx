@@ -1,38 +1,82 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, BookOpen, Newspaper, Trophy, Target, Milestone, Building, FlaskConical, Computer, Dumbbell } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { mockNews, mockAchievements } from '@/lib/data';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, limit, orderBy, query, Timestamp } from 'firebase/firestore';
+import type { NewsArticle, Achievement } from '@/lib/types';
 
-export default function HomePage() {
-  const latestNews = mockNews.slice(0, 3);
-  const featuredAchievements = mockAchievements.slice(0, 3);
+
+async function getLatestData() {
+    const defaultNews: NewsArticle[] = Array(3).fill(null).map((_, index) => ({
+        id: `default-news-${index + 1}`,
+        slug: 'default-news',
+        title: 'Judul Berita Contoh',
+        content: '',
+        author: 'Admin',
+        date: new Date().toISOString(),
+        imageUrl: 'https://placehold.co/400x250.png',
+        category: 'Berita',
+    }));
+
+    const defaultAchievements: Achievement[] = Array(3).fill(null).map((_, index) => ({
+        id: `default-achievement-${index + 1}`,
+        title: 'Prestasi Contoh',
+        description: 'Deskripsi prestasi',
+        date: new Date().toISOString(),
+        imageUrl: 'https://placehold.co/600x400.png',
+        category: 'Akademik'
+    }));
+    
+    try {
+        const newsCollectionRef = collection(db, 'newsArticles');
+        const newsQuery = query(newsCollectionRef, orderBy('date', 'desc'), limit(3));
+        const newsSnapshot = await getDocs(newsQuery);
+        const latestNews = newsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsArticle));
+
+        const achievementsCollectionRef = collection(db, 'achievements');
+        const achievementsQuery = query(achievementsCollectionRef, orderBy('date', 'desc'), limit(3));
+        const achievementsSnapshot = await getDocs(achievementsQuery);
+        const featuredAchievements = achievementsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Achievement));
+        
+        return { 
+            latestNews: latestNews.length ? latestNews : defaultNews, 
+            featuredAchievements: featuredAchievements.length ? featuredAchievements : defaultAchievements 
+        };
+    } catch (error) {
+        console.error("Failed to fetch latest data, returning defaults:", error);
+        return { latestNews: defaultNews, featuredAchievements: defaultAchievements };
+    }
+}
+
+
+export default async function HomePage() {
+  const { latestNews, featuredAchievements } = await getLatestData();
 
   const facilities = [
     {
       icon: <Building className="h-10 w-10 mx-auto text-primary mb-2"/>,
       title: "Ruang Kelas Modern",
-      total: "24",
+      description: "24 ruang kelas dengan fasilitas AC dan proyektor.",
     },
     {
       icon: <FlaskConical className="h-10 w-10 mx-auto text-primary mb-2"/>,
       title: "Lab Sains & Bahasa",
-      total: "6",
+      description: "6 laboratorium lengkap untuk praktikum dan bahasa.",
     },
     {
       icon: <Computer className="h-10 w-10 mx-auto text-primary mb-2"/>,
       title: "Lab Komputer",
-      total: "3",
+      description: "3 laboratorium komputer dengan perangkat terbaru.",
     },
     {
       icon: <Dumbbell className="h-10 w-10 mx-auto text-primary mb-2"/>,
       title: "Sarana Olahraga",
-      total: "5",
+      description: "5 area olahraga termasuk lapangan basket dan futsal.",
     },
   ]
 
@@ -41,7 +85,7 @@ export default function HomePage() {
       <main className="flex-1">
         <section className="relative w-full h-[60vh] md:h-[80vh]">
           <Image
-            src="https://placehold.co/1600x900"
+            src="https://placehold.co/1600x900.png"
             alt="Hero background"
             layout="fill"
             objectFit="cover"
@@ -56,21 +100,14 @@ export default function HomePage() {
             <p className="max-w-[700px] text-lg md:text-xl mt-4 animate-fade-in-up">
               Membentuk masa depan cerah melalui pendidikan berkualitas dan inovasi tanpa henti.
             </p>
-            <div className="mt-8">
-              <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="/penerimaan">
-                  Pendaftaran Siswa Baru <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
           </div>
         </section>
 
         <section id="about" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
+            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
               <div className="space-y-4">
-                <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Tentang Kami</Badge>
+                <Badge variant="secondary" className="text-base">Tentang Kami</Badge>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
                   Pendidikan Unggul untuk Generasi Masa Depan
                 </h2>
@@ -82,7 +119,7 @@ export default function HomePage() {
                 </Button>
               </div>
               <Image
-                src="https://placehold.co/600x400"
+                src="https://placehold.co/600x400.png"
                 width={600}
                 height={400}
                 alt="About us"
@@ -96,7 +133,7 @@ export default function HomePage() {
         <section id="visi-misi" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
            <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                <Badge className="bg-accent/10 text-accent-foreground hover:bg-accent/20">Visi & Misi</Badge>
+                <Badge variant="secondary" className="text-base">Visi & Misi</Badge>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Arah dan Tujuan Kami</h2>
              </div>
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mt-12">
@@ -140,20 +177,22 @@ export default function HomePage() {
         <section id="fasilitas" className="w-full py-12 md:py-24 lg:py-32">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Fasilitas</Badge>
+                    <Badge variant="secondary" className="text-base">Fasilitas</Badge>
                     <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Lingkungan Belajar Modern</h2>
                     <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                         Kami menyediakan fasilitas lengkap dan modern untuk mendukung proses belajar mengajar yang optimal.
                     </p>
                 </div>
-                <div className="mx-auto grid grid-cols-2 gap-6 pt-12 sm:grid-cols-4 lg:grid-cols-4">
+                <div className="mx-auto grid grid-cols-1 gap-8 pt-12 sm:grid-cols-2 lg:grid-cols-4">
                   {facilities.map((facility, index) => (
-                    <Card key={index} className="text-center p-4 transition-shadow duration-300 hover:shadow-lg flex flex-col justify-between">
-                        <div>
-                          {facility.icon}
-                          <CardTitle className="text-md font-semibold mt-2">{facility.title}</CardTitle>
-                        </div>
-                        <p className="text-4xl font-bold text-primary mt-4">{facility.total}</p>
+                    <Card key={index} className="text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col items-center">
+                        {facility.icon}
+                        <CardHeader className="p-0 mt-4">
+                          <CardTitle className="text-lg font-semibold">{facility.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0 mt-2">
+                          <p className="text-muted-foreground text-sm">{facility.description}</p>
+                        </CardContent>
                     </Card>
                   ))}
                 </div>
@@ -169,45 +208,48 @@ export default function HomePage() {
         <section id="news" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <Badge className="bg-accent/10 text-accent-foreground hover:bg-accent/20">Berita Terbaru</Badge>
+              <Badge variant="secondary" className="text-base">Berita Terbaru</Badge>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Ikuti Perkembangan Terkini</h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 Dapatkan informasi terbaru seputar kegiatan, pengumuman, dan pencapaian dari komunitas sekolah kami.
               </p>
             </div>
             <div className="mx-auto grid grid-cols-1 gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3">
-              {latestNews.map((article) => (
-                <Card key={article.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-                  <CardHeader className="p-0">
-                    <Link href={`/berita/${article.slug}`}>
-                      <Image
-                        src={article.imageUrl}
-                        width={400}
-                        height={250}
-                        alt={article.title}
-                        className="aspect-video w-full object-cover"
-                        data-ai-hint={article.category === 'Berita' ? "news event" : "announcement notice"}
-                      />
-                    </Link>
-                  </CardHeader>
-                  <CardContent className="p-6 flex-grow">
-                    <Badge variant="outline" className="mb-2">{article.category}</Badge>
-                    <CardTitle className="text-xl h-16 leading-tight font-headline">
-                       <Link href={`/berita/${article.slug}`} className="hover:text-primary transition-colors">{article.title}</Link>
-                    </CardTitle>
-                    <CardDescription className="mt-2 text-sm text-muted-foreground">
-                      {format(new Date(article.date), "d MMMM yyyy", { locale: id })}
-                    </CardDescription>
-                  </CardContent>
-                  <CardFooter className="p-6 pt-0">
-                    <Button asChild variant="link" className="p-0 h-auto">
-                      <Link href={`/berita/${article.slug}`}>
-                        Baca Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+              {latestNews.map((article) => {
+                 const articleDate = article.date instanceof Timestamp ? article.date.toDate() : new Date(article.date);
+                 return (
+                    <Card key={article.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
+                    <CardHeader className="p-0">
+                        <Link href={`/berita/${article.slug}`}>
+                        <Image
+                            src={article.imageUrl}
+                            width={400}
+                            height={250}
+                            alt={article.title}
+                            className="aspect-video w-full object-cover"
+                            data-ai-hint={article.category === 'Berita' ? "news event" : "announcement notice"}
+                        />
+                        </Link>
+                    </CardHeader>
+                    <CardContent className="p-6 flex-grow">
+                        <Badge variant="outline" className="mb-2">{article.category}</Badge>
+                        <CardTitle className="text-xl h-16 leading-tight font-headline">
+                        <Link href={`/berita/${article.slug}`} className="hover:text-primary transition-colors">{article.title}</Link>
+                        </CardTitle>
+                        <CardDescription className="mt-2 text-sm text-muted-foreground">
+                        {format(articleDate, "d MMMM yyyy", { locale: id })}
+                        </CardDescription>
+                    </CardContent>
+                    <CardFooter className="p-6 pt-0">
+                        <Button asChild variant="link" className="p-0 h-auto">
+                        <Link href={`/berita/${article.slug}`}>
+                            Baca Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                        </Button>
+                    </CardFooter>
+                    </Card>
+                 )
+              })}
             </div>
             <div className="text-center mt-12">
               <Button asChild variant="outline">
@@ -220,26 +262,37 @@ export default function HomePage() {
         <section id="achievements" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Prestasi Kami</Badge>
+              <Badge variant="secondary" className="text-base">Prestasi Kami</Badge>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Merayakan Keberhasilan</h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 Kami bangga dengan berbagai prestasi yang telah diraih oleh siswa dan sekolah kami di berbagai bidang.
               </p>
             </div>
-            <div className="mx-auto grid grid-cols-1 gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3">
-              {featuredAchievements.map((achievement) => (
-                <Card key={achievement.id} className="flex flex-col text-center items-center p-6 transition-shadow duration-300 hover:shadow-lg">
-                  <div className="p-4 bg-accent rounded-full mb-4">
-                    <Trophy className="h-8 w-8 text-accent-foreground" />
-                  </div>
-                  <CardHeader className="p-0">
-                    <CardTitle className="text-lg font-semibold font-headline">{achievement.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0 mt-2 flex-grow">
-                    <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="mx-auto grid grid-cols-1 gap-8 pt-12 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredAchievements.map((achievement) => {
+                 const achievementDate = achievement.date instanceof Timestamp ? achievement.date.toDate() : new Date(achievement.date);
+                 return (
+                    <Card key={achievement.id} className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
+                      <CardHeader className="p-0">
+                         <Image
+                            src={achievement.imageUrl}
+                            alt={achievement.title}
+                            width={600}
+                            height={400}
+                            className="w-full object-cover aspect-video"
+                            data-ai-hint="student achievement trophy"
+                          />
+                      </CardHeader>
+                      <CardContent className="p-6 flex-grow">
+                        <Badge variant="secondary" className="mb-2">{achievement.category}</Badge>
+                        <CardTitle className="text-xl font-headline h-16">{achievement.title}</CardTitle>
+                        <CardDescription className="text-sm mt-2">
+                           {format(achievementDate, "d MMMM yyyy", { locale: id })}
+                        </CardDescription>
+                      </CardContent>
+                    </Card>
+                  )
+              })}
             </div>
             <div className="text-center mt-12">
               <Button asChild variant="outline">

@@ -1,7 +1,35 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target, Milestone } from 'lucide-react';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import type { VisionMission } from '@/lib/types';
 
-export default function VisiMisiPage() {
+
+async function getVisionMission(): Promise<VisionMission> {
+    const defaultData: VisionMission = {
+        vision: "Menjadi sekolah unggul yang menghasilkan lulusan berkarakter mulia, cerdas, kompetitif secara global, dan cinta tanah air.",
+        mission: `<ul><li>Menyelenggarakan pendidikan berkualitas yang mengintegrasikan iman dan takwa.</li><li>Mengembangkan potensi siswa secara akademik dan non-akademik.</li><li>Membekali siswa dengan keterampilan abad ke-21.</li><li>Membangun jiwa kepemimpinan dan kepedulian sosial.</li></ul>`
+    };
+
+    try {
+        const docRef = doc(db, "settings", "visionMission");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return docSnap.data() as VisionMission;
+        } else {
+            return defaultData;
+        }
+    } catch (error) {
+        console.error("Failed to fetch vision/mission, returning default data.", error);
+        return defaultData;
+    }
+}
+
+
+export default async function VisiMisiPage() {
+  const data = await getVisionMission();
+
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="space-y-4 mb-12 text-center">
@@ -23,7 +51,7 @@ export default function VisiMisiPage() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground text-lg">
-              Menjadi sekolah unggul yang menghasilkan lulusan berkarakter mulia, cerdas, kompetitif secara global, dan cinta tanah air.
+              {data.vision}
             </p>
           </CardContent>
         </Card>
@@ -35,12 +63,7 @@ export default function VisiMisiPage() {
             <CardTitle className="font-headline text-3xl">Misi</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc pl-5 space-y-3 text-muted-foreground text-lg">
-              <li>Menyelenggarakan pendidikan berkualitas yang mengintegrasikan iman dan takwa.</li>
-              <li>Mengembangkan potensi siswa secara akademik dan non-akademik.</li>
-              <li>Membekali siswa dengan keterampilan abad ke-21.</li>
-              <li>Membangun jiwa kepemimpinan dan kepedulian sosial.</li>
-            </ul>
+            <div className="prose max-w-none dark:prose-invert text-muted-foreground" dangerouslySetInnerHTML={{ __html: data.mission }} />
           </CardContent>
         </Card>
       </div>

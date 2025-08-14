@@ -1,11 +1,36 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, FileText } from 'lucide-react';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
-export default function AkreditasiPage() {
-  // TODO: Ganti dengan URL PDF akreditasi yang sebenarnya.
-  // Untuk saat ini, kita tidak menampilkan PDF secara langsung karena butuh file.
-  const pdfUrl = "#"; 
+function getEmbedUrl(url: string): string | null {
+  if (!url) return null;
+  const fileIdMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileIdMatch && fileIdMatch[1]) {
+    return `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+  }
+  return null;
+}
+
+async function getAccreditationUrl(): Promise<string> {
+    try {
+        const settingRef = doc(db, 'settings', 'accreditationUrl');
+        const docSnap = await getDoc(settingRef);
+        if (docSnap.exists()) {
+            return docSnap.data().value || "";
+        }
+        return "";
+    } catch (error) {
+        console.error("Failed to fetch accreditation URL, returning empty string.", error);
+        return "";
+    }
+}
+
+
+export default async function AkreditasiPage() {
+  const originalPdfUrl = await getAccreditationUrl();
+  const embedUrl = getEmbedUrl(originalPdfUrl);
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -22,25 +47,32 @@ export default function AkreditasiPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Sertifikat Akreditasi BAN-S/M</CardTitle>
-            <Button asChild variant="secondary">
-              <a href={pdfUrl} download="Sertifikat-Akreditasi-SMA-EduVerse.pdf">
-                <Download className="mr-2 h-4 w-4" />
-                Unduh PDF
-              </a>
-            </Button>
+            {originalPdfUrl && (
+              <Button asChild variant="secondary">
+                <a href={originalPdfUrl} target="_blank" rel="noopener noreferrer" download>
+                  <Download className="mr-2 h-4 w-4" />
+                  Unduh PDF
+                </a>
+              </Button>
+            )}
           </CardHeader>
           <CardContent>
-            <div className="w-full aspect-video rounded-lg overflow-hidden border bg-muted flex flex-col items-center justify-center text-center p-8">
-               <FileText className="h-24 w-24 text-muted-foreground/50 mb-4" />
-              <h3 className="text-xl font-semibold text-muted-foreground">Pratinjau PDF tidak tersedia.</h3>
-              <p className="text-muted-foreground">Silakan unduh dokumen untuk melihatnya.</p>
-               {/* 
-                CATATAN: Untuk menampilkan PDF secara langsung di browser, Anda bisa menggunakan tag <iframe> atau <embed>:
-                <iframe src={pdfUrl} className="w-full h-full" title="Sertifikat Akreditasi"></iframe>
-                Pastikan file PDF tersedia di path yang benar di dalam folder /public. 
-                Contoh: /public/dokumen/akreditasi.pdf -> src="/dokumen/akreditasi.pdf"
-              */}
-            </div>
+            {embedUrl ? (
+              <div className="w-full aspect-[4/5] rounded-lg overflow-hidden border">
+                <iframe
+                  src={embedUrl}
+                  className="w-full h-full"
+                  title="Sertifikat Akreditasi SMA EduVerse"
+                  allow="autoplay"
+                ></iframe>
+              </div>
+            ) : (
+              <div className="w-full aspect-video rounded-lg overflow-hidden border bg-muted flex flex-col items-center justify-center text-center p-8">
+                <FileText className="h-24 w-24 text-muted-foreground/50 mb-4" />
+                <h3 className="text-xl font-semibold text-muted-foreground">Sertifikat Belum Diunggah</h3>
+                <p className="text-muted-foreground">Link sertifikat akreditasi belum diatur melalui CMS.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

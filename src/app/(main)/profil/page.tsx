@@ -2,8 +2,36 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Users, GraduationCap, Computer, Dumbbell } from 'lucide-react';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import type { SchoolProfile } from '@/lib/types';
 
-export default function ProfilPage() {
+async function getSchoolProfile(): Promise<SchoolProfile> {
+    const defaultProfile: SchoolProfile = {
+        principalName: "Dr. Siti Aminah, M.Pd.",
+        principalWelcome: `<p>"Selamat datang di SMA EduVerse! Kami bangga menjadi lembaga pendidikan yang berkomitmen pada keunggulan akademik dan pembentukan karakter. Di sini, kami tidak hanya mengajar, tetapi juga menginspirasi setiap siswa untuk menemukan dan mengembangkan potensi terbaik mereka."</p><p>"Dengan dukungan fasilitas modern, kurikulum yang relevan, dan tenaga pendidik profesional, kami menciptakan lingkungan belajar yang kondusif dan inovatif. Mari bersama-sama kita wujudkan masa depan yang gemilang bagi putra-putri kita."</p>`,
+        principalImageUrl: "https://placehold.co/400x500.png"
+    };
+
+    try {
+        const docRef = doc(db, "settings", "schoolProfile");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return docSnap.data() as SchoolProfile;
+        } else {
+            return defaultProfile;
+        }
+    } catch (error) {
+        console.error("Failed to fetch school profile, returning default data.", error);
+        return defaultProfile;
+    }
+}
+
+
+export default async function ProfilPage() {
+  const profile = await getSchoolProfile();
+
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="space-y-4 mb-12 text-center">
@@ -20,7 +48,7 @@ export default function ProfilPage() {
           <div className="grid md:grid-cols-5">
             <div className="md:col-span-2">
               <Image
-                src="https://placehold.co/400x500"
+                src={profile.principalImageUrl}
                 alt="Kepala Sekolah"
                 width={400}
                 height={500}
@@ -31,15 +59,13 @@ export default function ProfilPage() {
             <div className="md:col-span-3">
               <CardHeader>
                 <Badge variant="outline">Sambutan Kepala Sekolah</Badge>
-                <CardTitle className="text-3xl font-headline mt-2">Dr. Siti Aminah, M.Pd.</CardTitle>
+                <CardTitle className="text-3xl font-headline mt-2">{profile.principalName}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-muted-foreground">
-                <p>
-                  "Selamat datang di SMA EduVerse! Kami bangga menjadi lembaga pendidikan yang berkomitmen pada keunggulan akademik dan pembentukan karakter. Di sini, kami tidak hanya mengajar, tetapi juga menginspirasi setiap siswa untuk menemukan dan mengembangkan potensi terbaik mereka."
-                </p>
-                <p>
-                  "Dengan dukungan fasilitas modern, kurikulum yang relevan, dan tenaga pendidik profesional, kami menciptakan lingkungan belajar yang kondusif dan inovatif. Mari bersama-sama kita wujudkan masa depan yang gemilang bagi putra-putri kita."
-                </p>
+                 <div
+                    className="prose prose-lg max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: profile.principalWelcome }}
+                  />
               </CardContent>
             </div>
           </div>

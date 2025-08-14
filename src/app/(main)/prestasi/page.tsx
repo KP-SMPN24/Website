@@ -8,14 +8,14 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 
 async function getAllAchievements(): Promise<Achievement[]> {
-    const defaultAchievements: Achievement[] = Array(6).fill({
-        id: '1',
+    const defaultAchievements: Achievement[] = Array(6).fill(null).map((_, index) => ({
+        id: `default-achievement-${index + 1}`,
         title: 'Contoh Prestasi yang Diraih',
         description: 'Ini adalah deskripsi contoh untuk prestasi yang ditampilkan saat database tidak dapat diakses atau masih kosong.',
         date: new Date().toISOString(),
         imageUrl: 'https://placehold.co/600x400.png',
         category: 'Akademik'
-    });
+    }));
 
     try {
         const achievementsCollection = collection(db, 'achievements');

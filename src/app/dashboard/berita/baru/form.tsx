@@ -1,174 +1,109 @@
 'use client';
 
-import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Wand2, LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from "@/hooks/use-toast";
-import { generateNewsTitle } from '@/ai/flows/generate-news-title';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
-  title: z.string().min(10, {
-    message: 'Judul harus memiliki setidaknya 10 karakter.',
-  }),
-  content: z.string().min(50, {
-    message: 'Konten harus memiliki setidaknya 50 karakter.',
-  }),
+    title: z.string().min(10, {
+        message: 'Judul harus memiliki setidaknya 10 karakter.',
+    }),
+    content: z.string().min(50, {
+        message: 'Konten harus memiliki setidaknya 50 karakter.',
+    }),
 });
 
 export function NewsForm() {
-  const { toast } = useToast();
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+    const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      content: '',
-    },
-  });
-
-  async function handleGenerateTitles() {
-    const content = form.getValues('content');
-    if (content.length < 50) {
-      toast({
-        title: "Konten terlalu pendek",
-        description: "Mohon tulis setidaknya 50 karakter untuk menghasilkan judul.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsGenerating(true);
-    setSuggestions([]);
-    try {
-      const result = await generateNewsTitle({ newsContent: content });
-      setSuggestions(result.titleSuggestions);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Gagal menghasilkan judul",
-        description: "Terjadi kesalahan saat menghubungi AI. Silakan coba lagi.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  }
-
-  function applySuggestion(title: string) {
-    form.setValue('title', title);
-    setSuggestions([]);
-  }
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Berhasil Disimpan!",
-      description: "Artikel berita Anda telah disimpan (simulasi).",
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            title: '',
+            content: '',
+        },
     });
-    form.reset();
-  }
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Konten Artikel</CardTitle>
-            <CardDescription>Isi detail berita atau pengumuman di bawah ini.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Konten</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tulis isi artikel di sini..."
-                      className="min-h-[200px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        console.log(values);
+        toast({
+            title: 'Berhasil Disimpan!',
+            description: 'Artikel berita Anda telah disimpan (simulasi).',
+        });
+        form.reset();
+    }
 
-            <Card className="bg-muted/50">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Wand2 className="text-accent" />
-                  Generator Judul AI
-                </CardTitle>
-                <CardDescription>
-                  Tidak punya ide untuk judul? Biarkan AI membantu Anda. Tulis konten di atas, lalu klik tombol di bawah.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button type="button" onClick={handleGenerateTitles} disabled={isGenerating}>
-                  {isGenerating ? (
-                    <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Wand2 className="mr-2 h-4 w-4" />
-                  )}
-                  {isGenerating ? 'Menghasilkan...' : 'Hasilkan Judul'}
-                </Button>
-                {suggestions.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    <h4 className="font-semibold">Saran Judul:</h4>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {suggestions.map((s, i) => (
-                        <li key={i}>
-                          <Button
-                            type="button"
-                            variant="link"
-                            className="p-0 h-auto text-left"
-                            onClick={() => applySuggestion(s)}
-                          >
-                            {s}
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Judul Artikel</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Judul yang menarik akan ditampilkan di sini" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-        <Button type="submit">Simpan Artikel</Button>
-      </form>
-    </Form>
-  );
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Konten Artikel</CardTitle>
+                        <CardDescription>
+                            Isi detail berita atau pengumuman di bawah ini.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Judul Berita</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Tulis judul berita di sini..."
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Pastikan judul jelas dan informatif.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="content"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Isi Berita</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Tulis seluruh isi berita atau pengumuman di sini..."
+                                            className="min-h-[200px]"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </CardContent>
+                </Card>
+                <Button type="submit">Simpan dan Publikasikan Artikel</Button>
+            </form>
+        </Form>
+    );
 }

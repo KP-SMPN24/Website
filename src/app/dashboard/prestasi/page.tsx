@@ -27,9 +27,11 @@ export default function PrestasiManagementPage() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center">
         <h1 className="text-lg font-semibold md:text-2xl">Manajemen Prestasi</h1>
-        <Button size="sm" className="ml-auto gap-1 bg-accent hover:bg-accent/90" disabled>
-          Tambah Prestasi
-          <PlusCircle className="h-4 w-4" />
+        <Button asChild size="sm" className="ml-auto gap-1 bg-accent hover:bg-accent/90">
+          <Link href="/dashboard/prestasi/baru">
+            Tambah Prestasi
+            <PlusCircle className="h-4 w-4" />
+          </Link>
         </Button>
       </div>
       <Card>

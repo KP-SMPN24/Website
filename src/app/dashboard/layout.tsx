@@ -59,7 +59,7 @@ export default function DashboardLayout({
           <SidebarMenu>
             {menuItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href} legacyBehavior passHref>
+                <Link href={item.href}>
                   <SidebarMenuButton
                     isActive={pathname === item.href}
                     className={cn(
@@ -75,7 +75,7 @@ export default function DashboardLayout({
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          <Link href="/" legacyBehavior passHref>
+          <Link href="/">
              <SidebarMenuButton>Kembali ke Situs</SidebarMenuButton>
           </Link>
         </SidebarFooter>

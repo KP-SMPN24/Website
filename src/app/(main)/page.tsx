@@ -12,8 +12,8 @@ import type { NewsArticle, Achievement } from '@/lib/types';
 
 
 async function getLatestData() {
-    const defaultNews: NewsArticle[] = Array(3).fill({
-        id: '1',
+    const defaultNews: NewsArticle[] = Array(3).fill(null).map((_, index) => ({
+        id: `default-news-${index + 1}`,
         slug: 'default-news',
         title: 'Judul Berita Contoh',
         content: '',
@@ -21,16 +21,16 @@ async function getLatestData() {
         date: new Date().toISOString(),
         imageUrl: 'https://placehold.co/400x250.png',
         category: 'Berita',
-    });
+    }));
 
-    const defaultAchievements: Achievement[] = Array(3).fill({
-        id: '1',
+    const defaultAchievements: Achievement[] = Array(3).fill(null).map((_, index) => ({
+        id: `default-achievement-${index + 1}`,
         title: 'Prestasi Contoh',
         description: 'Deskripsi prestasi',
         date: new Date().toISOString(),
         imageUrl: 'https://placehold.co/600x400.png',
         category: 'Akademik'
-    });
+    }));
     
     try {
         const newsCollectionRef = collection(db, 'newsArticles');
